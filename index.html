@@ -32,14 +32,12 @@
   #padRight { right: 14px; flex-direction: column; gap: 14px; }
   .tBtn {
     pointer-events: auto;
-    width: 78px;
-    height: 78px;
+    width: 82px;
+    height: 82px;
     border-radius: 50%;
     background: rgba(92, 255, 214, 0.10);
     border: 2px solid rgba(92, 255, 214, 0.55);
     color: #5cffd6;
-    font-size: 30px;
-    font-weight: bold;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -48,6 +46,13 @@
     user-select: none;
     -webkit-user-select: none;
   }
+  .tBtn svg {
+    width: 44%;
+    height: 44%;
+    fill: currentColor;
+    pointer-events: none;       /* let taps fall through to the button */
+    display: block;
+  }
   .tBtn.active {
     transform: scale(0.92);
     background: rgba(255, 92, 247, 0.35);
@@ -55,10 +60,21 @@
     color: #fff;
     box-shadow: 0 0 22px rgba(255, 92, 247, 0.7), inset 0 0 16px rgba(255, 92, 247, 0.4);
   }
-  @media (max-height: 480px) {
-    .tBtn { width: 64px; height: 64px; font-size: 24px; }
-    #padLeft  { gap: 10px; left: 10px; bottom: 10px; }
-    #padRight { gap: 10px; right: 10px; bottom: 10px; }
+
+  /* Landscape phones: roomy horizontally — bigger buttons,
+     symmetric inset from each bottom corner. */
+  @media (orientation: landscape) and (max-height: 600px) {
+    .tBtn { width: 100px; height: 100px; }
+    #padLeft  { gap: 18px; left: 24px;  bottom: 24px; }
+    #padRight { gap: 18px; right: 24px; bottom: 24px; }
+  }
+
+  /* Very small portrait phones: a touch smaller so the cluster
+     doesn't crowd the canvas. */
+  @media (orientation: portrait) and (max-width: 360px) {
+    .tBtn { width: 68px; height: 68px; }
+    #padLeft  { gap: 10px; left: 10px;  bottom: 12px; }
+    #padRight { gap: 10px; right: 10px; bottom: 12px; }
   }
   #wrap {
     position: fixed; inset: 0;
@@ -261,14 +277,24 @@
   <canvas id="game" width="960" height="600"></canvas>
 </div>
 
-<!-- Mobile touch pads. Left pad: LEFT/RIGHT. Right pad: UP/DOWN. -->
+<!-- Mobile touch pads. Left pad: LEFT/RIGHT. Right pad: UP/DOWN.
+     Arrows are inline SVG so they render as crisp shapes — the Unicode
+     triangle characters got auto-styled as emoji on iOS/Android. -->
 <div id="padLeft" class="touchPad">
-  <div class="tBtn" data-key="arrowleft">◀</div>
-  <div class="tBtn" data-key="arrowright">▶</div>
+  <div class="tBtn" data-key="arrowleft" aria-label="Left">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 5 L7 12 L17 19 Z"/></svg>
+  </div>
+  <div class="tBtn" data-key="arrowright" aria-label="Right">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5 L17 12 L7 19 Z"/></svg>
+  </div>
 </div>
 <div id="padRight" class="touchPad">
-  <div class="tBtn" data-key="arrowup">▲</div>
-  <div class="tBtn" data-key="arrowdown">▼</div>
+  <div class="tBtn" data-key="arrowup" aria-label="Up">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 17 L12 7 L19 17 Z"/></svg>
+  </div>
+  <div class="tBtn" data-key="arrowdown" aria-label="Down">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7 L19 7 L12 17 Z"/></svg>
+  </div>
 </div>
 
 <div id="overlay">

@@ -118,6 +118,8 @@
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     z-index: 10;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;          /* allow vertical scroll inside overlay */
     padding: 30px;
     box-sizing: border-box;
   }
@@ -192,6 +194,54 @@
   }
   #endButtons button:hover { transform: scale(1.06); }
   .hidden { display: none !important; }
+
+  /* ========== MOBILE LAYOUT ==========
+     Shrink the menu so all 6 levels are visible (and scrollable when needed)
+     on phone-sized screens. */
+  @media (max-width: 760px) {
+    #overlay {
+      justify-content: flex-start;     /* start at top so user can scroll down */
+      padding: 18px 10px 32px;
+    }
+    #overlay h1 {
+      font-size: 36px; letter-spacing: 7px; margin-top: 6px;
+    }
+    #overlay p {
+      font-size: 12px; letter-spacing: 1px; line-height: 1.55;
+      max-width: 100%; margin: 8px 0;
+    }
+    .levels {
+      gap: 8px; margin-top: 10px;
+      width: 100%; max-width: 100%;
+    }
+    .levelCard {
+      width: calc(50% - 6px);
+      box-sizing: border-box;
+      padding: 10px 6px;
+    }
+    .levelCard .num     { font-size: 22px; letter-spacing: 4px; margin-bottom: 4px; }
+    .levelCard .sub     { font-size: 10px; letter-spacing: 2px; min-height: 24px; }
+    .levelCard .meta    { font-size: 9px;  letter-spacing: 1px; margin-top: 4px; }
+    .levelCard .diff    { margin-top: 6px; height: 4px; }
+    .keys               { padding: 2px 6px; font-size: 11px; }
+    #endButtons         { width: 100%; gap: 10px; margin-top: 14px; }
+    #endButtons button  { padding: 10px 18px; font-size: 13px; letter-spacing: 2px; }
+    /* Compact HUD on mobile so it doesn't crowd the canvas */
+    #hudTop { padding: 8px 12px; }
+    #title  { font-size: 16px; letter-spacing: 5px; }
+    #score, #combo { font-size: 14px; min-width: 0; }
+    #subhud { top: 36px; }
+    #levelInfo { font-size: 11px; letter-spacing: 3px; }
+    #modeLabel { font-size: 10px; letter-spacing: 3px; }
+    #modeBanner { font-size: 36px; letter-spacing: 8px; }
+    #modeBanner .sub { font-size: 11px; letter-spacing: 3px; }
+  }
+
+  /* Even smaller phones: 1 card per row */
+  @media (max-width: 360px) {
+    .levelCard { width: 100%; }
+    .levelCard .sub { min-height: 0; }
+  }
 </style>
 </head>
 <body>
@@ -1000,8 +1050,12 @@
   }
   document.querySelectorAll('.tBtn').forEach(bindTouchButton);
 
-  // Stop the page from scrolling/zooming on stray touches outside the buttons.
-  document.addEventListener('touchmove', (e) => { e.preventDefault(); }, { passive: false });
+  // Block stray page-scroll/zoom during gameplay, but ALLOW native scrolling
+  // inside the menu overlay so the user can reach all level cards.
+  document.addEventListener('touchmove', (e) => {
+    if (!overlay.classList.contains('hidden') && overlay.contains(e.target)) return;
+    e.preventDefault();
+  }, { passive: false });
   document.addEventListener('gesturestart', (e) => { e.preventDefault(); });
 
   // Resume audio context on first user touch (mobile browsers require gesture)

@@ -1,0 +1,1896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Movely Mobile — Rhythm Escape</title>
+<style>
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: #05021a;
+    font-family: 'Trebuchet MS', sans-serif;
+    color: #fff; overflow: hidden; user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: none;
+    overscroll-behavior: none;
+  }
+
+  /* ========== MOBILE TOUCH CONTROLS ========== */
+  .touchPad {
+    position: fixed;
+    bottom: 16px;
+    z-index: 8;
+    display: flex;
+    pointer-events: none;
+  }
+  #padLeft  { left: 14px; flex-direction: row; gap: 14px; }
+  #padRight { right: 14px; flex-direction: column; gap: 14px; }
+  .tBtn {
+    pointer-events: auto;
+    width: 78px;
+    height: 78px;
+    border-radius: 50%;
+    background: rgba(92, 255, 214, 0.10);
+    border: 2px solid rgba(92, 255, 214, 0.55);
+    color: #5cffd6;
+    font-size: 30px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 12px rgba(92, 255, 214, 0.25), inset 0 0 12px rgba(92, 255, 214, 0.15);
+    transition: transform 0.05s, background 0.05s, box-shadow 0.05s;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .tBtn.active {
+    transform: scale(0.92);
+    background: rgba(255, 92, 247, 0.35);
+    border-color: #ff5cf7;
+    color: #fff;
+    box-shadow: 0 0 22px rgba(255, 92, 247, 0.7), inset 0 0 16px rgba(255, 92, 247, 0.4);
+  }
+  @media (max-height: 480px) {
+    .tBtn { width: 64px; height: 64px; font-size: 24px; }
+    #padLeft  { gap: 10px; left: 10px; bottom: 10px; }
+    #padRight { gap: 10px; right: 10px; bottom: 10px; }
+  }
+  #wrap {
+    position: fixed; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #game { display: block; image-rendering: pixelated; }
+  #hudTop {
+    position: fixed; top: 0; left: 0; right: 0;
+    padding: 14px 24px;
+    display: flex; justify-content: space-between; align-items: center;
+    pointer-events: none; z-index: 5;
+  }
+  #title { font-size: 22px; letter-spacing: 8px; text-shadow: 0 0 12px #ff5cf7; }
+  #score { font-size: 18px; text-shadow: 0 0 6px #5cffd6; }
+  #combo { font-size: 18px; color: #ffe14f; text-shadow: 0 0 6px #ffaa00; min-width: 120px; text-align: right;}
+  #subhud {
+    position: fixed; top: 56px; left: 0; right: 0; text-align: center;
+    z-index: 5; pointer-events: none;
+  }
+  #levelInfo {
+    font-size: 14px; letter-spacing: 4px;
+  }
+  #modeLabel {
+    font-size: 12px; letter-spacing: 4px; margin-top: 3px;
+  }
+  #progressWrap {
+    margin: 6px auto 0; width: 60%;
+    height: 6px; background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 3px; overflow: hidden;
+  }
+  #progress {
+    height: 100%; width: 0;
+    background: linear-gradient(90deg, #5cffd6, #ff5cf7);
+    transition: width 0.1s linear;
+  }
+  #modeBanner {
+    position: fixed; top: 35%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.6);
+    font-size: 56px; letter-spacing: 14px;
+    z-index: 6; pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.5s cubic-bezier(0.2, 1.6, 0.4, 1);
+    text-shadow: 0 0 20px currentColor, 0 0 40px currentColor;
+    font-weight: bold; white-space: nowrap;
+  }
+  #modeBanner.show {
+    opacity: 1; transform: translate(-50%, -50%) scale(1);
+  }
+  #modeBanner .sub {
+    display: block; font-size: 14px; letter-spacing: 4px; opacity: 0.85;
+    margin-top: 6px; font-weight: normal;
+  }
+  #overlay {
+    position: fixed; inset: 0;
+    background: rgba(5, 2, 26, 0.94);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 10;
+    overflow-y: auto;
+    padding: 30px;
+    box-sizing: border-box;
+  }
+  #overlay h1 {
+    font-size: 56px; letter-spacing: 12px; margin: 0;
+    color: #fff;
+    text-shadow: 0 0 16px #ff5cf7, 0 0 32px #ff5cf7, 0 0 48px #5cffd6;
+  }
+  #overlay p {
+    font-size: 14px; letter-spacing: 2px; color: #ccddff;
+    line-height: 1.8; text-align: center; max-width: 580px;
+    margin: 14px 0;
+  }
+  .levels {
+    display: flex; flex-wrap: wrap; gap: 14px; justify-content: center;
+    margin-top: 16px; max-width: 880px;
+  }
+  .levelCard {
+    width: 160px; padding: 16px 10px;
+    background: rgba(255,255,255,0.05);
+    border: 2px solid;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+    text-align: center;
+  }
+  .levelCard:hover {
+    transform: translateY(-4px) scale(1.04);
+    background: rgba(255,255,255,0.08);
+  }
+  .levelCard .num {
+    font-size: 26px; letter-spacing: 6px; font-weight: bold;
+    margin-bottom: 6px;
+  }
+  .levelCard .sub {
+    font-size: 11px; letter-spacing: 3px; opacity: 0.75;
+    min-height: 30px;
+  }
+  .levelCard .meta {
+    font-size: 10px; letter-spacing: 2px; opacity: 0.55;
+    margin-top: 8px;
+  }
+  .levelCard .diff {
+    margin-top: 8px; height: 6px;
+    background: rgba(0,0,0,0.4); border-radius: 3px; overflow: hidden;
+  }
+  .levelCard .diff > div {
+    height: 100%; background: currentColor;
+  }
+  .keys {
+    display: inline-block; padding: 3px 9px;
+    background: rgba(92, 255, 214, 0.15);
+    border: 1px solid #5cffd6; border-radius: 4px;
+    margin: 0 2px; font-family: monospace; color: #5cffd6;
+  }
+  #endButtons {
+    margin-top: 18px; display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;
+  }
+  #endButtons button {
+    padding: 12px 28px;
+    font-size: 14px; letter-spacing: 3px;
+    background: linear-gradient(135deg, #ff5cf7, #5cffd6);
+    border: 2px solid #fff; border-radius: 4px;
+    color: #0a0420; font-weight: bold; cursor: pointer;
+    box-shadow: 0 0 16px rgba(255, 92, 247, 0.5);
+    transition: transform 0.15s;
+  }
+  #endButtons button.secondary {
+    background: transparent;
+    color: #fff;
+    box-shadow: none;
+  }
+  #endButtons button:hover { transform: scale(1.06); }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div id="hudTop">
+  <div id="title">MOVELY</div>
+  <div id="combo">COMBO: 0</div>
+  <div id="score">SCORE: 0</div>
+</div>
+<div id="subhud">
+  <div id="levelInfo" style="color:#5cffd6">LEVEL 1 — FIRST STEPS</div>
+  <div id="modeLabel" style="color:#5cffd6">MODE: NORMAL</div>
+  <div id="progressWrap"><div id="progress"></div></div>
+</div>
+<div id="modeBanner"></div>
+
+<div id="wrap">
+  <canvas id="game" width="960" height="600"></canvas>
+</div>
+
+<!-- Mobile touch pads. Left pad: LEFT/RIGHT. Right pad: UP/DOWN. -->
+<div id="padLeft" class="touchPad">
+  <div class="tBtn" data-key="arrowleft">◀</div>
+  <div class="tBtn" data-key="arrowright">▶</div>
+</div>
+<div id="padRight" class="touchPad">
+  <div class="tBtn" data-key="arrowup">▲</div>
+  <div class="tBtn" data-key="arrowdown">▼</div>
+</div>
+
+<div id="overlay">
+  <h1>MOVELY</h1>
+  <p>
+    A lovely alien is trapped in a room of lasers.<br>
+    Hold <span class="keys">W</span><span class="keys">A</span><span class="keys">S</span><span class="keys">D</span>
+    or arrows to move. Release to stop.<br>
+    Lasers fire on every beat — telegraphs warn you in advance. Each level is <b>3 minutes</b>.<br>
+    Pick a level. Survive to win.
+  </p>
+  <div class="levels" id="levelGrid"></div>
+  <div id="endButtons" class="hidden"></div>
+</div>
+
+<script>
+(() => {
+  const canvas = document.getElementById('game');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  const overlay = document.getElementById('overlay');
+  const overlayH1 = overlay.querySelector('h1');
+  const overlayP = overlay.querySelector('p');
+  const levelGrid = document.getElementById('levelGrid');
+  const endButtons = document.getElementById('endButtons');
+  const scoreEl = document.getElementById('score');
+  const comboEl = document.getElementById('combo');
+  const levelInfoEl = document.getElementById('levelInfo');
+  const modeLabelEl = document.getElementById('modeLabel');
+  const modeBannerEl = document.getElementById('modeBanner');
+  const progressEl = document.getElementById('progress');
+
+  const ARENA = { x: 80, y: 100, w: W - 160, h: H - 180 };
+  ARENA.right = ARENA.x + ARENA.w;
+  ARENA.bottom = ARENA.y + ARENA.h;
+
+  // ---------- LEVELS ----------
+  // Trap config helpers — used in hand-designed level patterns
+  // Coordinates are 0..1 fractions of the arena (so patterns are arena-size independent).
+  const T = {
+    h:    (y)            => ({ type: 'hLaser', y }),
+    v:    (x)            => ({ type: 'vLaser', x }),
+    d:    (dir, off=0)   => ({ type: 'diagLaser', dir, offset: off }),
+    b:    (side, lane=0.5) => ({ type: 'bullet', side, lane }),
+    hom:  (side=0)       => ({ type: 'homing', side }),
+    sw:   (side=0)       => ({ type: 'swarm', side }),
+    bomb: (cx, cy)       => ({ type: 'bomb', cx, cy }),
+    sp:   (side, pos=0.2) => ({ type: 'spikeWall', side, pos }),
+    pil:  (o, pos=0.5)   => ({ type: 'pillar', orientation: o, pos }),
+    rot:  (cx, cy)       => ({ type: 'rotLaser', cx, cy }),
+    ring: (cx, cy)       => ({ type: 'ring', cx, cy }),
+    bnc:  (side=0)       => ({ type: 'bouncer', side }),  // bounces around the arena
+  };
+
+  const LEVELS = [
+    {
+      name: 'LEVEL 1', subtitle: 'FIRST STEPS',
+      duration: 180, bpm: 110, color: '#5cffd6', diff: 1,
+      bg: ['#02141f', '#0c3a52'],
+      music: {
+        bassPattern: [55, 55, 82, 55, 55, 82, 62, 55, 55, 55, 82, 55, 49, 41, 62, 55],
+        leadPattern: [330, 0, 0, 0, 440, 0, 0, 0, 392, 0, 0, 0, 440, 0, 0, 0],
+        kickStart: 130, kickEnd: 45,
+        snareMode: 'none', hihat: 'soft',
+        bassType: 'sine', leadType: 'triangle',
+        bassGain: 0.22, leadGain: 0.06,
+      },
+      telegraphBeats: 2.0, fireDuration: 0.18,
+      patternKey: 'level1',
+    },
+    {
+      name: 'LEVEL 2', subtitle: 'CITY LIGHTS',
+      duration: 180, bpm: 124, color: '#a8ff3b', diff: 2,
+      bg: ['#0a1a02', '#284a08'],
+      music: {
+        bassPattern: [98, 98, 147, 98, 98, 147, 110, 98, 98, 98, 147, 98, 87, 73, 110, 98],
+        leadPattern: [587, 0, 784, 0, 587, 523, 784, 0, 587, 0, 880, 0, 784, 587, 523, 587],
+        kickStart: 160, kickEnd: 45,
+        snareMode: '24', hihat: 'normal',
+        bassType: 'sawtooth', leadType: 'square',
+        bassGain: 0.27, leadGain: 0.07,
+      },
+      telegraphBeats: 1.75, fireDuration: 0.18,
+      patternKey: 'level2',
+    },
+    {
+      name: 'LEVEL 3', subtitle: 'BREAKBEAT',
+      duration: 180, bpm: 140, color: '#5cb3ff', diff: 3,
+      bg: ['#02101a', '#0a3a66'],
+      music: {
+        bassPattern: [73, 73, 73, 110, 73, 73, 110, 73, 73, 73, 73, 110, 73, 65, 87, 73],
+        leadPattern: [880, 988, 1175, 988, 880, 0, 988, 1320, 1175, 988, 880, 0, 988, 880, 988, 1175],
+        kickStart: 175, kickEnd: 45,
+        snareMode: 'breakbeat', hihat: 'fast',
+        bassType: 'sawtooth', leadType: 'sawtooth',
+        bassGain: 0.26, leadGain: 0.07,
+      },
+      telegraphBeats: 1.5, fireDuration: 0.18,
+      patternKey: 'level3',
+    },
+    {
+      name: 'LEVEL 4', subtitle: 'CYBER PURGE',
+      duration: 180, bpm: 132, color: '#ff9c3b', diff: 4,
+      bg: ['#1a0a02', '#3a1c06'],
+      music: {
+        bassPattern: [55, 55, 55, 82, 55, 55, 82, 55, 55, 55, 55, 82, 49, 41, 82, 55],
+        leadPattern: [330, 392, 440, 0, 330, 0, 392, 0, 440, 0, 494, 0, 440, 392, 330, 0],
+        kickStart: 200, kickEnd: 38,
+        snareMode: '24', hihat: 'normal',
+        bassType: 'square', leadType: 'square',
+        bassGain: 0.32, leadGain: 0.08,
+        distort: true,
+      },
+      telegraphBeats: 1.25, fireDuration: 0.19,
+      patternKey: 'level4',
+    },
+    {
+      name: 'LEVEL 5', subtitle: 'OVERLOAD',
+      duration: 180, bpm: 165, color: '#ff3b6b', diff: 5,
+      bg: ['#1a0212', '#3a062c'],
+      music: {
+        bassPattern: [110, 110, 110, 165, 110, 110, 165, 123, 110, 110, 110, 165, 98, 82, 165, 110],
+        leadPattern: [880, 988, 1175, 988, 1320, 1175, 988, 880, 988, 1175, 1320, 1175, 988, 880, 1175, 988],
+        kickStart: 220, kickEnd: 35,
+        snareMode: 'breakbeat', hihat: 'fast',
+        bassType: 'sawtooth', leadType: 'sawtooth',
+        bassGain: 0.34, leadGain: 0.09,
+        distort: true,
+      },
+      telegraphBeats: 1.0, fireDuration: 0.20,
+      patternKey: 'level5',
+    },
+    {
+      // Endless mode — random with progressive difficulty (Subway-Surfers style)
+      name: 'LEVEL 6', subtitle: 'ENDLESS',
+      duration: -1, bpm: 130, color: '#ff5cf7', diff: 6,
+      bg: ['#150218', '#3a063a'],
+      music: {
+        bassPattern: [82, 82, 110, 82, 82, 110, 92, 82, 82, 82, 110, 82, 73, 62, 92, 82],
+        leadPattern: [659, 784, 988, 784, 659, 587, 784, 988, 784, 659, 988, 1175, 988, 784, 659, 587],
+        kickStart: 180, kickEnd: 40,
+        snareMode: '24', hihat: 'normal',
+        bassType: 'sawtooth', leadType: 'square',
+        bassGain: 0.30, leadGain: 0.08,
+      },
+      telegraphBeats: 1.5, fireDuration: 0.18,
+      endless: true,   // signals random + progressive difficulty
+    },
+  ];
+
+  // Hand-designed trap patterns. Each entry corresponds to a beat (0-indexed).
+  // null = no trap; an array of trap configs = traps that fire on that beat.
+  // Patterns loop at length, so the level repeats over its 3-minute duration.
+  const LEVEL_PATTERNS = {
+    // LEVEL 1 — 48 beats. Brisk pace, bouncer intro, no rest after the lead-in.
+    level1: [
+      null, null, null, null,                                                               // bar 1: 4-beat intro
+      [T.h(0.3)], null, [T.h(0.7)], null,                                                   // bar 2
+      [T.v(0.3)], [T.v(0.7)], null, [T.h(0.5)],                                             // bar 3
+      [T.bomb(0.3, 0.5)], null, [T.bomb(0.7, 0.5)], null,                                   // bar 4
+      [T.h(0.3), T.h(0.7)], null, [T.v(0.3), T.v(0.7)], null,                               // bar 5
+      [T.d(1, 0)], null, [T.d(-1, 0)], null,                                                // bar 6
+      [T.b(0, 0.3)], [T.b(0, 0.7)], [T.b(2, 0.3)], [T.b(2, 0.7)],                           // bar 7
+      [T.bnc(0)], null, [T.h(0.5)], null,                                                   // bar 8 — bouncer enters
+      [T.bomb(0.5, 0.5)], null, [T.h(0.4), T.h(0.6)], null,                                 // bar 9
+      [T.bnc(2), T.v(0.5)], null, [T.h(0.5)], null,                                         // bar 10
+      [T.h(0.5), T.v(0.5)], null, [T.d(1, 0), T.d(-1, 0)], null,                            // bar 11
+      [T.bomb(0.3, 0.3), T.bomb(0.7, 0.7)], null, [T.bnc(1)], null,                         // bar 12
+    ],
+    // LEVEL 2 — 48 beats. Already dense from beat one. Two bouncers.
+    level2: [
+      [T.h(0.3)], [T.h(0.7)], [T.v(0.3)], [T.v(0.7)],
+      [T.bomb(0.3, 0.3)], null, [T.bomb(0.7, 0.7)], null,
+      [T.h(0.5), T.v(0.5)], null, [T.d(1, 0), T.d(-1, 0)], null,
+      [T.b(0, 0.3), T.b(0, 0.7)], null, [T.b(2, 0.3), T.b(2, 0.7)], null,
+      [T.bnc(0)], null, [T.h(0.5)], [T.v(0.5)],
+      [T.sw(0)], null, [T.sw(2)], null,
+      [T.h(0.3), T.v(0.3)], [T.h(0.7), T.v(0.7)], null, [T.bomb(0.5, 0.5)],
+      [T.bnc(1), T.bnc(3)], null, null, [T.h(0.5)],
+      [T.d(1, 0.3)], [T.d(-1, -0.3)], [T.h(0.3), T.h(0.7)], null,
+      [T.bomb(0.3, 0.7), T.bomb(0.7, 0.3)], null, [T.b(0), T.b(2)], null,
+      [T.v(0.3), T.v(0.7)], [T.h(0.3), T.h(0.7)], null, [T.bnc(0)],
+      [T.h(0.5), T.v(0.5)], [T.d(1, 0), T.d(-1, 0)], [T.bomb(0.5, 0.5)], null,
+    ],
+    // LEVEL 3 — 64 beats. Breakbeat density: bullets, homing, multi-traps every beat.
+    level3: [
+      [T.d(1, 0)], [T.d(-1, 0)], [T.h(0.5)], [T.v(0.5)],
+      [T.h(0.3), T.v(0.3)], [T.h(0.7), T.v(0.7)], null, [T.hom(0)],
+      [T.bomb(0.5, 0.5)], null, [T.bnc(0)], null,
+      [T.b(0)], [T.b(1)], [T.b(2)], [T.b(3)],
+      [T.d(1, 0.3)], [T.d(-1, -0.3)], [T.bomb(0.3, 0.7), T.bomb(0.7, 0.3)], null,
+      [T.hom(0)], [T.hom(2)], [T.h(0.5), T.v(0.5)], null,
+      [T.h(0.3), T.h(0.7)], [T.v(0.3), T.v(0.7)], null, [T.sw(0)],
+      [T.bnc(1), T.bnc(3)], null, [T.h(0.5)], null,
+      [T.d(1, 0), T.d(-1, 0)], [T.h(0.4), T.h(0.6)], null, [T.bomb(0.5, 0.5)],
+      [T.b(0, 0.3), T.b(0, 0.7)], [T.b(2, 0.3), T.b(2, 0.7)], [T.hom(1)], null,
+      [T.h(0.3), T.h(0.7)], [T.v(0.3), T.v(0.7)], [T.bnc(0)], null,
+      [T.d(1, 0), T.d(-1, 0), T.h(0.5)], null, [T.v(0.3), T.v(0.7), T.hom(0)], null,
+      [T.bomb(0.3, 0.3), T.bomb(0.7, 0.7)], [T.bomb(0.3, 0.7), T.bomb(0.7, 0.3)], null, [T.bnc(2)],
+      [T.h(0.5), T.v(0.5), T.d(1, 0), T.d(-1, 0)], null, null, [T.hom(0), T.hom(2)],
+      [T.b(0), T.b(2)], [T.b(1), T.b(3)], [T.bnc(0), T.bnc(1)], null,
+      [T.h(0.3), T.v(0.3)], [T.h(0.7), T.v(0.7)], [T.bomb(0.5, 0.5)], [T.h(0.5)],
+    ],
+    // LEVEL 4 — 48 beats. Spike walls, pillars, dense combos.
+    level4: [
+      [T.sp(0, 0.2)], [T.sp(2, 0.5)], [T.pil('h', 0.3)], [T.pil('v', 0.7)],
+      [T.h(0.3), T.h(0.7)], null, [T.v(0.3), T.v(0.7)], null,
+      [T.bomb(0.3, 0.3), T.bomb(0.7, 0.7)], null, [T.hom(0), T.hom(2)], null,
+      [T.sp(1, 0.3), T.sp(3, 0.4)], [T.bnc(0)], [T.h(0.5)], null,
+      [T.d(1, 0)], [T.d(-1, 0)], [T.d(1, 0.4)], [T.d(-1, -0.4)],
+      [T.b(0, 0.3), T.b(0, 0.7)], [T.b(2, 0.3), T.b(2, 0.7)], [T.sw(0)], [T.sw(2)],
+      [T.pil('h', 0.5), T.pil('v', 0.5)], null, [T.bomb(0.5, 0.5)], [T.bnc(2)],
+      [T.sp(0, 0.2), T.sp(2, 0.6)], [T.h(0.5), T.v(0.5)], null, [T.hom(1)],
+      [T.bnc(1), T.bnc(3)], null, [T.h(0.3), T.v(0.3)], [T.h(0.7), T.v(0.7)],
+      [T.d(1, 0), T.d(-1, 0), T.h(0.5)], null, [T.bomb(0.5, 0.5), T.hom(0)], null,
+      [T.pil('h', 0.4), T.pil('v', 0.6)], [T.b(0), T.b(2)], [T.sw(1), T.sw(3)], null,
+      [T.bnc(0), T.bnc(2), T.h(0.5)], null, [T.bomb(0.3, 0.3), T.bomb(0.7, 0.7), T.v(0.5)], null,
+    ],
+    // LEVEL 5 — 64 beats. Wall-to-wall hazards, multiple bouncers, every trap type.
+    level5: [
+      [T.h(0.3), T.v(0.3)], [T.h(0.7), T.v(0.7)], [T.d(1, 0)], [T.d(-1, 0)],
+      [T.sp(0, 0.2), T.sp(2, 0.6)], [T.pil('h', 0.5)], [T.pil('v', 0.5)], [T.bnc(0)],
+      [T.bomb(0.3, 0.3), T.bomb(0.7, 0.7)], [T.bomb(0.3, 0.7), T.bomb(0.7, 0.3)], [T.ring(0.5, 0.5)], null,
+      [T.b(0), T.b(1)], [T.b(2), T.b(3)], [T.hom(0), T.hom(2)], [T.bnc(1), T.bnc(3)],
+      [T.rot(0.5, 0.5)], null, [T.h(0.5), T.v(0.5)], [T.d(1, 0), T.d(-1, 0)],
+      [T.sw(0), T.sw(2)], [T.bnc(0), T.bnc(2)], [T.bomb(0.5, 0.5)], [T.hom(1), T.hom(3)],
+      [T.sp(0, 0.2), T.v(0.5)], [T.sp(2, 0.5), T.h(0.5)], [T.pil('h', 0.3)], [T.pil('v', 0.7)],
+      [T.d(1, 0), T.d(-1, 0), T.v(0.5)], [T.hom(0), T.hom(2)], [T.b(0), T.b(2)], [T.bomb(0.5, 0.5), T.ring(0.5, 0.5)],
+      [T.h(0.3), T.h(0.7), T.v(0.3), T.v(0.7)], null, [T.bnc(0), T.bnc(1), T.bnc(2)], null,
+      [T.rot(0.3, 0.3)], [T.rot(0.7, 0.7)], [T.h(0.5), T.v(0.5)], [T.bomb(0.5, 0.5)],
+      [T.sp(0, 0.2), T.sp(1, 0.3), T.sp(2, 0.5)], null, [T.b(0), T.b(1), T.b(2), T.b(3)], [T.hom(0)],
+      [T.bnc(0), T.bnc(2), T.h(0.5), T.v(0.5)], null, [T.bomb(0.3, 0.5), T.bomb(0.7, 0.5)], [T.hom(0)],
+      [T.pil('h', 0.4), T.pil('v', 0.6), T.bnc(1)], [T.h(0.3), T.h(0.7)], [T.v(0.3), T.v(0.7)], null,
+      [T.d(1, 0), T.d(-1, 0), T.bomb(0.5, 0.5)], null, [T.bnc(0), T.bnc(1), T.bnc(2), T.bnc(3)], null,
+      [T.ring(0.5, 0.5), T.bomb(0.5, 0.5)], [T.h(0.5), T.v(0.5)], [T.d(1, 0), T.d(-1, 0)], [T.hom(0), T.hom(2)],
+      [T.sp(0, 0.1), T.sp(2, 0.7), T.pil('h', 0.5), T.pil('v', 0.5)], null, [T.bomb(0.3, 0.3), T.bomb(0.7, 0.7), T.bnc(0), T.bnc(2)], null,
+    ],
+  };
+
+  // Endless-mode difficulty phases
+  function getEndlessPhase(elapsedSec) {
+    if (elapsedSec < 30)  return { gap: 2, simul: 1, sub: false, types: ['hLaser','vLaser','bullet'] };
+    if (elapsedSec < 60)  return { gap: 1, simul: 1, sub: false, types: ['hLaser','vLaser','bullet','bomb','swarm','bouncer'] };
+    if (elapsedSec < 120) return { gap: 1, simul: 2, sub: false, types: ['hLaser','vLaser','bullet','bomb','swarm','diagLaser','homing','bouncer'] };
+    if (elapsedSec < 180) return { gap: 1, simul: 2, sub: false, types: ['hLaser','vLaser','bullet','bomb','swarm','diagLaser','homing','spikeWall','pillar','bouncer'] };
+    if (elapsedSec < 240) return { gap: 1, simul: 3, sub: false, types: ['hLaser','vLaser','bullet','bomb','swarm','diagLaser','homing','spikeWall','pillar','rotLaser','ring','bouncer'] };
+    return                  { gap: 1, simul: 3, sub: true,  types: ['hLaser','vLaser','bullet','bomb','swarm','diagLaser','homing','spikeWall','pillar','rotLaser','ring','bouncer'] };
+  }
+
+  const MODE_DEFS = {
+    NORMAL:   { flipX: false, flipY: false, color: '#5cffd6', short: 'Move freely' },
+    INVERTED: { flipX: true,  flipY: true,  color: '#ff3b6b', short: 'All directions reversed' },
+  };
+
+  let currentLevel = LEVELS[0];
+  let currentMode = MODE_DEFS.NORMAL;
+  let currentModeName = 'NORMAL';
+
+  // ---------- AUDIO ----------
+  let audioCtx = null;
+  let masterGain = null;
+  let sessionGain = null;   // recreated per game session so retries cut old audio
+  let songStartTime = 0;
+  let nextBeatToSchedule = 0;
+  let beatPulse = 0;
+  const pendingBeats = [];
+
+  function initAudio() {
+    if (audioCtx) return;
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    masterGain = audioCtx.createGain();
+    masterGain.gain.value = 0.5;
+    masterGain.connect(audioCtx.destination);
+  }
+  function startSession() {
+    if (!audioCtx) return;
+    endSession();
+    sessionGain = audioCtx.createGain();
+    sessionGain.gain.value = 1;
+    sessionGain.connect(masterGain);
+  }
+  function endSession() {
+    if (!sessionGain || !audioCtx) return;
+    const t = audioCtx.currentTime;
+    try {
+      sessionGain.gain.cancelScheduledValues(t);
+      sessionGain.gain.setValueAtTime(sessionGain.gain.value, t);
+      sessionGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
+    } catch(e) {}
+    const old = sessionGain;
+    setTimeout(() => { try { old.disconnect(); } catch(e){} }, 350);
+    sessionGain = null;
+  }
+
+  function makeDistortCurve(amount) {
+    const k = amount;
+    const n = 256;
+    const curve = new Float32Array(n);
+    for (let i = 0; i < n; i++) {
+      const x = (i * 2) / n - 1;
+      curve[i] = ((3 + k) * x * 20 * Math.PI/180) / (Math.PI + k * Math.abs(x));
+    }
+    return curve;
+  }
+
+  function getBeatDuration() { return 60 / currentLevel.bpm; }
+
+  function scheduleBeat(beatIndex, time) {
+    const m = currentLevel.music;
+    const beatDur = getBeatDuration();
+    const inBar = beatIndex % 16;
+
+    // KICK
+    {
+      const osc = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      osc.frequency.setValueAtTime(m.kickStart, time);
+      osc.frequency.exponentialRampToValueAtTime(m.kickEnd, time + 0.16);
+      g.gain.setValueAtTime(0.95, time);
+      g.gain.exponentialRampToValueAtTime(0.001, time + 0.22);
+      osc.connect(g).connect(sessionGain);
+      osc.start(time); osc.stop(time + 0.24);
+    }
+    // SNARE
+    if (m.snareMode === '24' && (beatIndex % 2 === 1)) snareAt(time);
+    if (m.snareMode === 'breakbeat') {
+      // hits on beat 2, 3.5 (off-beat), 4
+      const sub = beatIndex % 4;
+      if (sub === 1) snareAt(time);
+      if (sub === 3) { snareAt(time); snareAt(time + beatDur * 0.5); }
+    }
+    // HI-HAT
+    if (m.hihat === 'soft') hihatAt(time, 0.08);
+    if (m.hihat === 'normal') {
+      hihatAt(time, 0.13);
+      hihatAt(time + beatDur * 0.5, 0.13);
+    }
+    if (m.hihat === 'fast') {
+      hihatAt(time, 0.13);
+      hihatAt(time + beatDur * 0.25, 0.10);
+      hihatAt(time + beatDur * 0.5, 0.13);
+      hihatAt(time + beatDur * 0.75, 0.10);
+    }
+    // BASS
+    {
+      const f = m.bassPattern[inBar];
+      const osc = audioCtx.createOscillator();
+      osc.type = m.bassType;
+      osc.frequency.value = f;
+      const filt = audioCtx.createBiquadFilter();
+      filt.type = 'lowpass';
+      filt.frequency.setValueAtTime(900, time);
+      filt.frequency.exponentialRampToValueAtTime(220, time + beatDur * 0.9);
+      const g = audioCtx.createGain();
+      g.gain.setValueAtTime(0, time);
+      g.gain.linearRampToValueAtTime(m.bassGain, time + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.001, time + beatDur * 0.9);
+      let nodes = osc.connect(filt);
+      if (m.distort) {
+        const ws = audioCtx.createWaveShaper();
+        ws.curve = makeDistortCurve(8);
+        nodes = nodes.connect(ws);
+      }
+      nodes.connect(g).connect(sessionGain);
+      osc.start(time); osc.stop(time + beatDur);
+    }
+    // LEAD
+    {
+      const f = m.leadPattern[inBar];
+      if (f > 0) {
+        const osc = audioCtx.createOscillator();
+        osc.type = m.leadType;
+        osc.frequency.value = f;
+        const g = audioCtx.createGain();
+        g.gain.setValueAtTime(0, time);
+        g.gain.linearRampToValueAtTime(m.leadGain, time + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.001, time + beatDur * 0.7);
+        let nodes = osc;
+        if (m.distort) {
+          const ws = audioCtx.createWaveShaper();
+          ws.curve = makeDistortCurve(4);
+          nodes = osc.connect(ws);
+          nodes.connect(g).connect(sessionGain);
+        } else {
+          osc.connect(g).connect(sessionGain);
+        }
+        osc.start(time); osc.stop(time + beatDur * 0.75);
+      }
+    }
+  }
+  function snareAt(time) {
+    const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.15, audioCtx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = (Math.random()*2-1) * Math.pow(1 - i/d.length, 2);
+    const n = audioCtx.createBufferSource(); n.buffer = buf;
+    const f = audioCtx.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 1500;
+    const g = audioCtx.createGain();
+    g.gain.setValueAtTime(0.4, time);
+    g.gain.exponentialRampToValueAtTime(0.001, time + 0.14);
+    n.connect(f).connect(g).connect(sessionGain);
+    n.start(time);
+  }
+  function hihatAt(time, gain) {
+    const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.05, audioCtx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = (Math.random()*2-1) * Math.pow(1 - i/d.length, 4);
+    const n = audioCtx.createBufferSource(); n.buffer = buf;
+    const f = audioCtx.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 6500;
+    const g = audioCtx.createGain();
+    g.gain.setValueAtTime(gain, time);
+    g.gain.exponentialRampToValueAtTime(0.001, time + 0.05);
+    n.connect(f).connect(g).connect(sessionGain);
+    n.start(time);
+  }
+
+  // Audio scheduler: just music, ~0.3s lookahead. Bounded and safe.
+  function audioScheduler() {
+    if (!audioCtx || !sessionGain) return;
+    const beatDur = getBeatDuration();
+    const lookahead = 0.3;
+    let safety = 0;
+    while (songStartTime + nextBeatToSchedule * beatDur < audioCtx.currentTime + lookahead) {
+      if (safety++ > 8) break; // hard cap per frame
+      const t = songStartTime + nextBeatToSchedule * beatDur;
+      // skip beats too far in the past
+      if (t < audioCtx.currentTime - 0.2) {
+        nextBeatToSchedule++;
+        continue;
+      }
+      try { scheduleBeat(nextBeatToSchedule, t); } catch (e) { /* ignore audio errors */ }
+      pendingBeats.push({ time: t, index: nextBeatToSchedule });
+      nextBeatToSchedule++;
+    }
+  }
+
+  // Trap planner: lookahead = telegraph length, so traps appear with full warning.
+  // Independent of audio scheduling so tight per-frame loops can't stack with audio work.
+  let nextTrapBeat = 0;
+  function trapPlanner() {
+    if (!audioCtx) return;
+    const beatDur = getBeatDuration();
+    const lookahead = currentLevel.telegraphBeats * beatDur + 0.15;
+    let safety = 0;
+    while (songStartTime + nextTrapBeat * beatDur < audioCtx.currentTime + lookahead) {
+      if (safety++ > 8) break;
+      const beatTime = songStartTime + nextTrapBeat * beatDur;
+      // skip if telegraph would already be largely missed
+      if (beatTime < audioCtx.currentTime - 0.2) {
+        nextTrapBeat++;
+        continue;
+      }
+      planTrapsForBeat(nextTrapBeat);
+      nextTrapBeat++;
+    }
+  }
+
+  // ---------- PLAYER & STATE ----------
+  const player = {
+    x: ARENA.x + ARENA.w/2 - 22,
+    y: ARENA.y + ARENA.h/2 - 22,
+    w: 44, h: 44, speed: 360,
+    bobPhase: 0, hurtFlash: 0,
+    moveTrail: [],
+    burstTimer: 0, burstDir: { x: 0, y: 0 }, burstStrength: 0,
+  };
+  const state = {
+    running: false, gameOver: false, levelComplete: false,
+    score: 0, combo: 0, bestCombo: 0,
+    survivedBeats: 0, traps: [], particles: [], floatTexts: [],
+    elapsed: 0,
+  };
+  const keys = {};
+
+  // ---------- TRAP PLANNING ----------
+  let lastEndlessSpawnBeat = -999;
+
+  function planTrapsForBeat(beatIndex) {
+    if (beatIndex < 4) return;
+    const lvl = currentLevel;
+    const beatDur = getBeatDuration();
+    const fireTime = songStartTime + beatIndex * beatDur;
+    const telegraphStart = fireTime - lvl.telegraphBeats * beatDur;
+    const fireDuration = lvl.fireDuration;
+
+    if (lvl.endless) {
+      planEndless(beatIndex, fireTime, telegraphStart, fireDuration, beatDur);
+    } else {
+      planFromPattern(lvl, beatIndex, fireTime, telegraphStart, fireDuration);
+    }
+  }
+
+  // Hand-designed pattern playback. The pattern array loops over the level's duration
+  // so the same sequence repeats — players learn it through repetition, GD-style.
+  function planFromPattern(lvl, beatIndex, fireTime, telegraphStart, fireDuration) {
+    const pat = LEVEL_PATTERNS[lvl.patternKey];
+    if (!pat) return;
+    // Skip 4-beat lead-in then loop the pattern
+    const patBeat = (beatIndex - 4 + pat.length) % pat.length;
+    const slot = pat[patBeat];
+    if (!slot) return;
+    for (const cfg of slot) {
+      spawnTrap(cfg, telegraphStart, fireTime, fireDuration);
+    }
+  }
+
+  // Endless mode: random spawning that gets harder over time.
+  function planEndless(beatIndex, fireTime, telegraphStart, fireDuration, beatDur) {
+    const phase = getEndlessPhase(state.elapsed);
+    if (beatIndex - lastEndlessSpawnBeat < phase.gap) return;
+    if (Math.random() > 0.85) { lastEndlessSpawnBeat = beatIndex; return; }
+    lastEndlessSpawnBeat = beatIndex;
+    const simul = 1 + Math.floor(Math.random() * phase.simul);
+    for (let i = 0; i < simul; i++) {
+      const type = phase.types[Math.floor(Math.random() * phase.types.length)];
+      spawnTrap({ type }, telegraphStart, fireTime, fireDuration);
+    }
+    if (phase.sub && Math.random() < 0.5) {
+      const subFireTime = fireTime + beatDur * 0.5;
+      const subTelegraphStart = subFireTime - (fireTime - telegraphStart);
+      const type = phase.types[Math.floor(Math.random() * phase.types.length)];
+      spawnTrap({ type }, subTelegraphStart, subFireTime, fireDuration);
+    }
+  }
+
+  // Convert a 0..1 fraction (or undefined) into an arena coordinate.
+  function fx(f, fallback) { return ARENA.x + (f !== undefined ? f : fallback) * ARENA.w; }
+  function fy(f, fallback) { return ARENA.y + (f !== undefined ? f : fallback) * ARENA.h; }
+
+  function spawnTrap(cfg, telegraphStart, fireTime, fireDuration) {
+    const type = cfg.type;
+    const trap = { type, telegraphStart, fireTime, fireDuration, hit: false, scored: false };
+
+    if (type === 'hLaser') {
+      const beamH = 36;
+      const yFrac = cfg.y !== undefined ? cfg.y : (0.15 + Math.random() * 0.7);
+      trap.y = ARENA.y + yFrac * (ARENA.h - beamH) + (yFrac > 0.5 ? 0 : 0);
+      trap.h = beamH;
+    } else if (type === 'vLaser') {
+      const beamW = 36;
+      const xFrac = cfg.x !== undefined ? cfg.x : (0.15 + Math.random() * 0.7);
+      trap.x = ARENA.x + xFrac * (ARENA.w - beamW);
+      trap.w = beamW;
+    } else if (type === 'diagLaser') {
+      trap.thickness = 30;
+      trap.dir = cfg.dir !== undefined ? cfg.dir : (Math.random() < 0.5 ? 1 : -1);
+      trap.cx = ARENA.x + ARENA.w/2;
+      trap.cy = ARENA.y + ARENA.h/2;
+      trap.offset = (cfg.offset !== undefined ? cfg.offset : (Math.random() - 0.5) * 0.8) * Math.min(ARENA.w, ARENA.h) * 0.5;
+    } else if (type === 'bullet') {
+      const side = cfg.side !== undefined ? cfg.side : Math.floor(Math.random() * 4);
+      const lane = cfg.lane !== undefined ? cfg.lane : 0.5;
+      const px = player.x + player.w/2;
+      const py = player.y + player.h/2;
+      let sx, sy, ex, ey;
+      if (side === 0) {
+        sx = ARENA.x + lane * ARENA.w; sy = ARENA.y - 30;
+        ex = cfg.lane !== undefined ? sx : px;
+        ey = ARENA.bottom + 30;
+      } else if (side === 1) {
+        sx = ARENA.right + 30; sy = ARENA.y + lane * ARENA.h;
+        ex = ARENA.x - 30;
+        ey = cfg.lane !== undefined ? sy : py;
+      } else if (side === 2) {
+        sx = ARENA.x + lane * ARENA.w; sy = ARENA.bottom + 30;
+        ex = cfg.lane !== undefined ? sx : px;
+        ey = ARENA.y - 30;
+      } else {
+        sx = ARENA.x - 30; sy = ARENA.y + lane * ARENA.h;
+        ex = ARENA.right + 30;
+        ey = cfg.lane !== undefined ? sy : py;
+      }
+      trap.startX = sx; trap.startY = sy;
+      trap.endX = ex; trap.endY = ey;
+      trap.size = 14;
+    } else if (type === 'homing') {
+      const side = cfg.side !== undefined ? cfg.side : Math.floor(Math.random() * 4);
+      let sx, sy;
+      if (side === 0) { sx = ARENA.x + Math.random() * ARENA.w; sy = ARENA.y - 30; }
+      else if (side === 1) { sx = ARENA.right + 30; sy = ARENA.y + Math.random() * ARENA.h; }
+      else if (side === 2) { sx = ARENA.x + Math.random() * ARENA.w; sy = ARENA.bottom + 30; }
+      else { sx = ARENA.x - 30; sy = ARENA.y + Math.random() * ARENA.h; }
+      trap.startX = sx; trap.startY = sy;
+      trap.endX = sx; trap.endY = sy;
+      trap.locked = false; trap.size = 12;
+    } else if (type === 'swarm') {
+      const side = cfg.side !== undefined ? cfg.side : Math.floor(Math.random() * 4);
+      const angle = side * Math.PI / 2 + Math.PI; // approximate origin direction
+      const dist = Math.min(ARENA.w, ARENA.h) * 0.6;
+      const cx = ARENA.x + ARENA.w/2;
+      const cy = ARENA.y + ARENA.h/2;
+      const sx = cx + Math.cos(angle) * dist;
+      const sy = cy + Math.sin(angle) * dist;
+      trap.bullets = [];
+      for (let i = -1; i <= 1; i++) {
+        const spread = i * 0.3;
+        const aim = Math.atan2(cy - sy, cx - sx) + spread;
+        trap.bullets.push({
+          startX: sx + i * 14, startY: sy + i * 14,
+          dirX: Math.cos(aim), dirY: Math.sin(aim), size: 10,
+        });
+      }
+    } else if (type === 'bomb') {
+      trap.cx = fx(cfg.cx, 0.3 + Math.random() * 0.4);
+      trap.cy = fy(cfg.cy, 0.3 + Math.random() * 0.4);
+      trap.r = 90;
+    } else if (type === 'spikeWall') {
+      const side = cfg.side !== undefined ? cfg.side : Math.floor(Math.random() * 4);
+      const pos = cfg.pos !== undefined ? cfg.pos : Math.random() * 0.45;
+      trap.side = side;
+      if (side === 0 || side === 2) {
+        const len = ARENA.w * 0.55;
+        trap.bandStart = ARENA.x + pos * (ARENA.w - len);
+        trap.bandLen = len; trap.depth = 70;
+      } else {
+        const len = ARENA.h * 0.55;
+        trap.bandStart = ARENA.y + pos * (ARENA.h - len);
+        trap.bandLen = len; trap.depth = 70;
+      }
+    } else if (type === 'pillar') {
+      const orient = cfg.orientation || (Math.random() < 0.5 ? 'h' : 'v');
+      trap.orientation = orient;
+      trap.thickness = 60;
+      const pos = cfg.pos !== undefined ? cfg.pos : 0.2 + Math.random() * 0.6;
+      if (orient === 'h') trap.y = ARENA.y + pos * (ARENA.h - trap.thickness);
+      else                trap.x = ARENA.x + pos * (ARENA.w - trap.thickness);
+    } else if (type === 'rotLaser') {
+      trap.cx = fx(cfg.cx, 0.4 + Math.random() * 0.2);
+      trap.cy = fy(cfg.cy, 0.4 + Math.random() * 0.2);
+      trap.startAngle = Math.random() * Math.PI * 2;
+      trap.endAngle = trap.startAngle + (Math.random() < 0.5 ? 1 : -1) * (Math.PI * 0.7);
+      trap.thickness = 22;
+      trap.length = Math.max(ARENA.w, ARENA.h);
+    } else if (type === 'ring') {
+      trap.cx = fx(cfg.cx, 0.4 + Math.random() * 0.2);
+      trap.cy = fy(cfg.cy, 0.4 + Math.random() * 0.2);
+      trap.rOuter = 200; trap.rInner = 130;
+    } else if (type === 'bouncer') {
+      // Spawn at one of 4 walls, head into arena at a random angle, bounce off walls.
+      const side = cfg.side !== undefined ? cfg.side : Math.floor(Math.random() * 4);
+      const speed = cfg.speed || 320;
+      let sx, sy, ang;
+      const margin = 24;
+      if (side === 0)      { sx = ARENA.x + Math.random() * ARENA.w; sy = ARENA.y + margin;       ang = Math.PI * (0.25 + Math.random() * 0.5); }
+      else if (side === 1) { sx = ARENA.right - margin; sy = ARENA.y + Math.random() * ARENA.h;   ang = Math.PI * (0.75 + Math.random() * 0.5); }
+      else if (side === 2) { sx = ARENA.x + Math.random() * ARENA.w; sy = ARENA.bottom - margin;  ang = Math.PI * (1.25 + Math.random() * 0.5); }
+      else                 { sx = ARENA.x + margin; sy = ARENA.y + Math.random() * ARENA.h;       ang = Math.PI * (-0.25 + Math.random() * 0.5); }
+      trap.bx = sx; trap.by = sy;
+      trap.vx = Math.cos(ang) * speed;
+      trap.vy = Math.sin(ang) * speed;
+      trap.size = 14;
+      // Bouncer "fires" for its full lifetime — the orb is dangerous while alive.
+      trap.fireDuration = 4.5;
+      trap.bounces = 0;
+    }
+    state.traps.push(trap);
+  }
+
+  // ---------- MODE ----------
+  function setMode(name, showBanner = true) {
+    if (!MODE_DEFS[name]) return;
+    currentModeName = name;
+    currentMode = MODE_DEFS[name];
+    modeLabelEl.textContent = `MODE: ${currentModeName}`;
+    modeLabelEl.style.color = currentMode.color;
+    if (showBanner && name !== 'NORMAL') {
+      modeBannerEl.innerHTML = `${currentModeName}<span class="sub">${currentMode.short.toUpperCase()}</span>`;
+      modeBannerEl.style.color = currentMode.color;
+      modeBannerEl.classList.add('show');
+      setTimeout(() => modeBannerEl.classList.remove('show'), 1700);
+    }
+  }
+  function transformDir(rawX, rawY) {
+    let x = rawX, y = rawY;
+    if (currentMode.flipX) x = -x;
+    if (currentMode.flipY) y = -y;
+    return { x, y };
+  }
+
+  // ---------- INPUT ----------
+  function beatTiming() {
+    if (!audioCtx) return { perfect: false, good: false };
+    const beatDur = getBeatDuration();
+    const elapsed = audioCtx.currentTime - songStartTime;
+    const beat = elapsed / beatDur;
+    const off = (beat - Math.round(beat)) * beatDur;
+    const absMs = Math.abs(off) * 1000;
+    // Tightened windows — PERFECT now requires real precision
+    return { perfect: absMs < 45, good: absMs < 110, absMs };
+  }
+  // Track key-press times so we can detect "rhythm dodges": a press timed near the
+  // beat the trap fires on. No score for presses themselves — points come from dodging.
+  // Each press can only claim ONE trap's rhythm bonus, so spamming keys can't farm
+  // bonuses across multiple traps.
+  const recentPresses = [];
+
+  function handlePressed(rawDir, rawName) {
+    if (!audioCtx) return;
+    const dir = transformDir(rawDir.x, rawDir.y);
+    // Fixed-strength movement burst — timing doesn't affect movement.
+    doBurst(dir, 0.4);
+    recentPresses.push({ time: audioCtx.currentTime, used: false });
+    if (recentPresses.length > 32) recentPresses.shift();
+  }
+
+  // Was a key pressed in rhythm with this trap's fire time?
+  // Tight ±70 ms window AND each press consumes its bonus, so spam doesn't farm.
+  function wasInRhythm(fireTime) {
+    for (let i = recentPresses.length - 1; i >= 0; i--) {
+      const p = recentPresses[i];
+      if (p.time < fireTime - 0.15) return false;
+      if (!p.used && Math.abs(p.time - fireTime) <= 0.07) {
+        p.used = true;
+        return true;
+      }
+    }
+    return false;
+  }
+  function doBurst(dir, strength) {
+    player.burstTimer = 0.12;
+    player.burstDir.x = dir.x; player.burstDir.y = dir.y;
+    player.burstStrength = 240 * strength;
+    spawnBurstParticles(dir);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.repeat) return;
+    const k = e.key.toLowerCase();
+    keys[k] = true;
+    if (!state.running) return;
+    let dir = null, name = null;
+    if (k === 'w' || k === 'arrowup')    { dir = { x: 0, y: -1 }; name = 'up'; }
+    else if (k === 's' || k === 'arrowdown')  { dir = { x: 0, y: 1 }; name = 'down'; }
+    else if (k === 'a' || k === 'arrowleft')  { dir = { x: -1, y: 0 }; name = 'left'; }
+    else if (k === 'd' || k === 'arrowright') { dir = { x: 1, y: 0 }; name = 'right'; }
+    if (dir) { handlePressed(dir, name); e.preventDefault(); }
+  });
+  document.addEventListener('keyup', (e) => { keys[e.key.toLowerCase()] = false; });
+
+  // ========== MOBILE TOUCH BINDING ==========
+  // Each touch button presses/releases a virtual arrow key.
+  // - touchstart triggers a one-shot handlePressed (so pressing on-beat earns the rhythm bonus)
+  // - the keys map stays true while held, so movement continues until release
+  // Multi-touch works because each button has its own listeners.
+  function dirForKey(name) {
+    if (name === 'arrowup')    return { x: 0, y: -1 };
+    if (name === 'arrowdown')  return { x: 0, y: 1 };
+    if (name === 'arrowleft')  return { x: -1, y: 0 };
+    if (name === 'arrowright') return { x: 1, y: 0 };
+    return null;
+  }
+  function bindTouchButton(el) {
+    const name = el.dataset.key;
+    const press = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!keys[name]) {
+        keys[name] = true;
+        el.classList.add('active');
+        if (state.running) {
+          const dir = dirForKey(name);
+          if (dir) handlePressed(dir);
+        }
+      }
+    };
+    const release = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      keys[name] = false;
+      el.classList.remove('active');
+    };
+    el.addEventListener('touchstart',  press,   { passive: false });
+    el.addEventListener('touchend',    release, { passive: false });
+    el.addEventListener('touchcancel', release, { passive: false });
+    // Mouse fallback for desktop testing
+    el.addEventListener('mousedown', press);
+    el.addEventListener('mouseup', release);
+    el.addEventListener('mouseleave', release);
+  }
+  document.querySelectorAll('.tBtn').forEach(bindTouchButton);
+
+  // Stop the page from scrolling/zooming on stray touches outside the buttons.
+  document.addEventListener('touchmove', (e) => { e.preventDefault(); }, { passive: false });
+  document.addEventListener('gesturestart', (e) => { e.preventDefault(); });
+
+  // Resume audio context on first user touch (mobile browsers require gesture)
+  function resumeAudioOnTouch() {
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  }
+  document.addEventListener('touchstart', resumeAudioOnTouch, { passive: true });
+
+  function pushFloatText(text, color, x, y) {
+    state.floatTexts.push({ text, color, x, y, life: 0.9, vy: -50 });
+  }
+  function spawnBurstParticles(dir) {
+    for (let i = 0; i < 8; i++) {
+      state.particles.push({
+        x: player.x + player.w/2, y: player.y + player.h/2,
+        vx: -dir.x * (60 + Math.random()*120) + (Math.random()-0.5)*40,
+        vy: -dir.y * (60 + Math.random()*120) + (Math.random()-0.5)*40,
+        life: 0.4, size: 2 + Math.random() * 3,
+        color: '#5cffd6',
+      });
+    }
+  }
+  function spawnHitParticles() {
+    for (let i = 0; i < 36; i++) {
+      state.particles.push({
+        x: player.x + player.w/2, y: player.y + player.h/2,
+        vx: (Math.random()-0.5)*700, vy: (Math.random()-0.5)*700,
+        life: 0.9, size: 2 + Math.random()*4,
+        color: ['#ff3b6b','#ffe14f','#fff'][Math.floor(Math.random()*3)],
+      });
+    }
+  }
+  function spawnDodgeParticles(x, y) {
+    for (let i = 0; i < 5; i++) {
+      state.particles.push({
+        x, y, vx: (Math.random()-0.5)*200, vy: (Math.random()-0.5)*200,
+        life: 0.4, size: 2 + Math.random()*2, color: '#ffe14f',
+      });
+    }
+  }
+
+  // ---------- COLLISION ----------
+  function rectsOverlap(a, b) {
+    return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+  }
+  function circleRect(cx, cy, r, rect) {
+    const nx = Math.max(rect.x, Math.min(cx, rect.x + rect.w));
+    const ny = Math.max(rect.y, Math.min(cy, rect.y + rect.h));
+    const dx = cx - nx, dy = cy - ny;
+    return dx*dx + dy*dy < r*r;
+  }
+  function pointLineDist(px, py, x1, y1, x2, y2) {
+    const A = px - x1, B = py - y1, C = x2 - x1, D = y2 - y1;
+    const dot = A*C + B*D, lenSq = C*C + D*D;
+    let t = lenSq === 0 ? 0 : dot / lenSq;
+    t = Math.max(0, Math.min(1, t));
+    const xx = x1 + t*C, yy = y1 + t*D;
+    return Math.hypot(px - xx, py - yy);
+  }
+  function playerHit() { return { x: player.x + 6, y: player.y + 6, w: player.w - 12, h: player.h - 12 }; }
+  function spikeWallRect(tr) {
+    if (tr.side === 0) return { x: tr.bandStart, y: ARENA.y, w: tr.bandLen, h: tr.depth };
+    if (tr.side === 1) return { x: ARENA.right - tr.depth, y: tr.bandStart, w: tr.depth, h: tr.bandLen };
+    if (tr.side === 2) return { x: tr.bandStart, y: ARENA.bottom - tr.depth, w: tr.bandLen, h: tr.depth };
+    if (tr.side === 3) return { x: ARENA.x, y: tr.bandStart, w: tr.depth, h: tr.bandLen };
+  }
+  function pillarRect(tr) {
+    if (tr.orientation === 'h') return { x: ARENA.x, y: tr.y, w: ARENA.w, h: tr.thickness };
+    return { x: tr.x, y: ARENA.y, w: tr.thickness, h: ARENA.h };
+  }
+
+  // ---------- UPDATE ----------
+  function update(dt) {
+    if (!state.running || state.gameOver || state.levelComplete) return;
+
+    audioScheduler();
+    trapPlanner();
+    beatPulse = Math.max(0, beatPulse - dt * 3);
+
+    if (audioCtx) {
+      const now = audioCtx.currentTime;
+      // Drain beats — used only for visual pulse, no passive score
+      while (pendingBeats.length && pendingBeats[0].time <= now) {
+        pendingBeats.shift();
+        beatPulse = 1;
+        state.survivedBeats += 1;
+      }
+      const elapsedSinceStart = now - songStartTime;
+      state.elapsed = Math.max(0, elapsedSinceStart);
+
+      // Modes — Level 1-5 stay NORMAL so patterns can be learned.
+      // Level 6 (endless) alternates NORMAL and INVERTED every 30 seconds.
+      if (currentLevel.endless) {
+        const want = (Math.floor(state.elapsed / 30) % 2 === 1) ? 'INVERTED' : 'NORMAL';
+        if (want !== currentModeName) setMode(want);
+      } else if (currentModeName !== 'NORMAL') {
+        setMode('NORMAL');
+      }
+
+      // Progress bar (only for fixed-length levels)
+      if (currentLevel.duration > 0) {
+        const pct = Math.min(100, (state.elapsed / currentLevel.duration) * 100);
+        progressEl.style.width = pct + '%';
+        if (state.elapsed >= currentLevel.duration && !state.levelComplete) {
+          levelComplete();
+        }
+      } else {
+        // Endless: show running time on the bar (cycling each minute)
+        const pct = ((state.elapsed % 60) / 60) * 100;
+        progressEl.style.width = pct + '%';
+      }
+    }
+
+    // movement
+    let rx = 0, ry = 0;
+    if (keys['w']||keys['arrowup']) ry -= 1;
+    if (keys['s']||keys['arrowdown']) ry += 1;
+    if (keys['a']||keys['arrowleft']) rx -= 1;
+    if (keys['d']||keys['arrowright']) rx += 1;
+    const td = transformDir(rx, ry);
+    let dx = td.x, dy = td.y;
+    if (dx !== 0 && dy !== 0) {
+      const inv = 1 / Math.sqrt(dx*dx + dy*dy);
+      dx *= inv; dy *= inv;
+    }
+    player.x += dx * player.speed * dt;
+    player.y += dy * player.speed * dt;
+
+    if (player.burstTimer > 0) {
+      player.x += player.burstDir.x * player.burstStrength * dt;
+      player.y += player.burstDir.y * player.burstStrength * dt;
+      player.burstTimer -= dt;
+    }
+    if (player.x < ARENA.x) player.x = ARENA.x;
+    if (player.y < ARENA.y) player.y = ARENA.y;
+    if (player.x + player.w > ARENA.right) player.x = ARENA.right - player.w;
+    if (player.y + player.h > ARENA.bottom) player.y = ARENA.bottom - player.h;
+
+    player.bobPhase += dt * 6;
+    player.hurtFlash = Math.max(0, player.hurtFlash - dt * 4);
+
+    player.moveTrail.push({ x: player.x + player.w/2, y: player.y + player.h/2, life: 0.3 });
+    for (const t of player.moveTrail) t.life -= dt;
+    player.moveTrail = player.moveTrail.filter(t => t.life > 0).slice(-12);
+
+    const now = audioCtx ? audioCtx.currentTime : 0;
+    for (const tr of state.traps) {
+      tr.firing = now >= tr.fireTime && now <= tr.fireTime + tr.fireDuration;
+      tr.expired = now > tr.fireTime + tr.fireDuration + 0.4;
+
+      if (tr.type === 'bullet') {
+        const ts = tr.fireTime - 0.05, te = tr.fireTime + 0.4;
+        if (now >= ts && now <= te) {
+          const u = (now - ts) / (te - ts);
+          tr.curX = tr.startX + (tr.endX - tr.startX) * (u + 0.4 * u);
+          tr.curY = tr.startY + (tr.endY - tr.startY) * (u + 0.4 * u);
+          tr.firing = u > 0.05;
+        } else if (now > te) tr.expired = true;
+      } else if (tr.type === 'homing') {
+        if (!tr.locked && now > tr.fireTime - 0.15) {
+          tr.endX = player.x + player.w/2; tr.endY = player.y + player.h/2;
+          tr.locked = true;
+        }
+        const ts = tr.fireTime - 0.05, te = tr.fireTime + 0.5;
+        if (now >= ts && now <= te) {
+          const u = (now - ts) / (te - ts);
+          tr.curX = tr.startX + (tr.endX - tr.startX) * (u + 0.3 * u);
+          tr.curY = tr.startY + (tr.endY - tr.startY) * (u + 0.3 * u);
+          tr.firing = u > 0.05;
+        } else if (now > te) tr.expired = true;
+      } else if (tr.type === 'swarm') {
+        const ts = tr.fireTime - 0.05, te = tr.fireTime + 0.5;
+        if (now >= ts && now <= te) {
+          const u = (now - ts) / (te - ts);
+          for (const b of tr.bullets) {
+            b.curX = b.startX + b.dirX * 800 * u;
+            b.curY = b.startY + b.dirY * 800 * u;
+          }
+          tr.firing = u > 0.05;
+        } else if (now > te) tr.expired = true;
+      } else if (tr.type === 'rotLaser') {
+        if (now < tr.fireTime) {
+          const u = Math.max(0, Math.min(1, (now - tr.telegraphStart) / (tr.fireTime - tr.telegraphStart)));
+          tr.currentAngle = tr.startAngle + (tr.endAngle - tr.startAngle) * u;
+        } else { tr.currentAngle = tr.endAngle; }
+      } else if (tr.type === 'bouncer') {
+        if (tr.firing) {
+          // Use a small fixed step so bouncer can't tunnel through walls if dt spikes
+          const ddt = Math.min(0.025, dt);
+          tr.bx += tr.vx * ddt;
+          tr.by += tr.vy * ddt;
+          if (tr.bx < ARENA.x + tr.size)      { tr.bx = ARENA.x + tr.size;      tr.vx = Math.abs(tr.vx); tr.bounces++; }
+          else if (tr.bx > ARENA.right - tr.size) { tr.bx = ARENA.right - tr.size; tr.vx = -Math.abs(tr.vx); tr.bounces++; }
+          if (tr.by < ARENA.y + tr.size)      { tr.by = ARENA.y + tr.size;      tr.vy = Math.abs(tr.vy); tr.bounces++; }
+          else if (tr.by > ARENA.bottom - tr.size) { tr.by = ARENA.bottom - tr.size; tr.vy = -Math.abs(tr.vy); tr.bounces++; }
+        }
+      }
+
+      if (tr.firing && !tr.hit) {
+        const hb = playerHit();
+        let hit = false;
+        if (tr.type === 'hLaser') {
+          if (rectsOverlap(hb, { x: ARENA.x, y: tr.y, w: ARENA.w, h: tr.h })) hit = true;
+        } else if (tr.type === 'vLaser') {
+          if (rectsOverlap(hb, { x: tr.x, y: ARENA.y, w: tr.w, h: ARENA.h })) hit = true;
+        } else if (tr.type === 'diagLaser') {
+          const cx = ARENA.x + ARENA.w/2, cy = ARENA.y + ARENA.h/2;
+          const angle = tr.dir > 0 ? Math.PI/4 : -Math.PI/4;
+          const dxL = Math.cos(angle), dyL = Math.sin(angle);
+          const x1 = cx - dxL * 1000 + (-dyL) * tr.offset;
+          const y1 = cy - dyL * 1000 + (dxL) * tr.offset;
+          const x2 = cx + dxL * 1000 + (-dyL) * tr.offset;
+          const y2 = cy + dyL * 1000 + (dxL) * tr.offset;
+          const d = pointLineDist(hb.x + hb.w/2, hb.y + hb.h/2, x1, y1, x2, y2);
+          if (d < tr.thickness/2 + Math.min(hb.w, hb.h)/2 - 4) hit = true;
+        } else if (tr.type === 'bomb') {
+          const cx = hb.x + hb.w/2, cy = hb.y + hb.h/2;
+          if ((cx-tr.cx)**2 + (cy-tr.cy)**2 < tr.r*tr.r) hit = true;
+        } else if (tr.type === 'spikeWall') {
+          if (rectsOverlap(hb, spikeWallRect(tr))) hit = true;
+        } else if (tr.type === 'bullet' || tr.type === 'homing') {
+          if (tr.curX !== undefined && circleRect(tr.curX, tr.curY, tr.size, hb)) hit = true;
+        } else if (tr.type === 'swarm') {
+          for (const b of tr.bullets) {
+            if (b.curX !== undefined && circleRect(b.curX, b.curY, b.size, hb)) { hit = true; break; }
+          }
+        } else if (tr.type === 'pillar') {
+          if (rectsOverlap(hb, pillarRect(tr))) hit = true;
+        } else if (tr.type === 'rotLaser') {
+          const x1 = tr.cx, y1 = tr.cy;
+          const x2 = tr.cx + Math.cos(tr.currentAngle) * tr.length;
+          const y2 = tr.cy + Math.sin(tr.currentAngle) * tr.length;
+          const d = pointLineDist(hb.x + hb.w/2, hb.y + hb.h/2, x1, y1, x2, y2);
+          if (d < tr.thickness/2 + Math.min(hb.w, hb.h)/2 - 4) hit = true;
+        } else if (tr.type === 'ring') {
+          const cx = hb.x + hb.w/2, cy = hb.y + hb.h/2;
+          const d2 = (cx-tr.cx)**2 + (cy-tr.cy)**2;
+          if (d2 < tr.rOuter*tr.rOuter && d2 > tr.rInner*tr.rInner) hit = true;
+        } else if (tr.type === 'bouncer') {
+          if (circleRect(tr.bx, tr.by, tr.size, hb)) hit = true;
+        }
+        if (hit) { tr.hit = true; gameOver(); }
+      }
+
+      if (!tr.scored && now > tr.fireTime + tr.fireDuration && !tr.hit) {
+        tr.scored = true;
+        state.combo += 1;
+        if (state.combo > state.bestCombo) state.bestCombo = state.combo;
+        if (wasInRhythm(tr.fireTime)) {
+          state.score += 200;
+          pushFloatText('RHYTHM!', '#ffe14f', player.x + player.w/2, player.y - 10);
+        } else {
+          state.score += 80;
+          pushFloatText('DODGE', '#5cffd6', player.x + player.w/2, player.y - 10);
+        }
+        spawnDodgeParticles(player.x + player.w/2, player.y + player.h/2);
+      }
+    }
+    state.traps = state.traps.filter(tr => !tr.expired);
+
+    for (const p of state.particles) {
+      p.x += p.vx * dt; p.y += p.vy * dt;
+      p.vx *= 0.96; p.vy *= 0.96;
+      p.life -= dt;
+    }
+    state.particles = state.particles.filter(p => p.life > 0);
+    for (const f of state.floatTexts) { f.life -= dt; f.y += f.vy * dt; }
+    state.floatTexts = state.floatTexts.filter(f => f.life > 0);
+
+    scoreEl.textContent = `SCORE: ${state.score}`;
+    comboEl.textContent = `COMBO: ${state.combo}`;
+  }
+
+  function gameOver() {
+    state.gameOver = true; state.running = false;
+    player.hurtFlash = 1;
+    spawnHitParticles();
+    endSession();   // cut audio so retries don't stack
+    setTimeout(() => showEndScreen(false), 700);
+  }
+  function levelComplete() {
+    state.levelComplete = true; state.running = false;
+    pushFloatText('LEVEL COMPLETE!', currentLevel.color, W/2, H/2);
+    endSession();
+    setTimeout(() => showEndScreen(true), 1200);
+  }
+
+  function showEndScreen(won) {
+    overlay.classList.remove('hidden');
+    levelGrid.classList.add('hidden');
+    endButtons.classList.remove('hidden');
+    overlayH1.textContent = won ? 'LEVEL COMPLETE' : 'GAME OVER';
+    overlayH1.style.textShadow = won
+      ? `0 0 16px ${currentLevel.color}, 0 0 32px ${currentLevel.color}`
+      : '0 0 16px #ff3b6b, 0 0 32px #ff3b6b';
+    const m = Math.floor(state.elapsed / 60);
+    const s = Math.floor(state.elapsed % 60);
+    const survivedLine = currentLevel.endless
+      ? `Survived: <b>${m}:${s.toString().padStart(2,'0')}</b>`
+      : (won ? 'You survived the full track!' : `Survived: <b>${m}:${s.toString().padStart(2,'0')}</b>`);
+    overlayP.innerHTML = `
+      <b style="color:${currentLevel.color}">${currentLevel.name} — ${currentLevel.subtitle}</b><br>
+      ${survivedLine}<br>
+      Score: <b>${state.score}</b> &nbsp; Best Combo: <b>${state.bestCombo}</b>
+    `;
+    endButtons.innerHTML = '';
+    const idx = LEVELS.indexOf(currentLevel);
+    if (won && idx < LEVELS.length - 1) {
+      const next = document.createElement('button');
+      next.textContent = 'NEXT LEVEL';
+      next.onclick = () => startLevel(idx + 1);
+      endButtons.appendChild(next);
+    }
+    const retry = document.createElement('button');
+    retry.textContent = won ? 'REPLAY' : 'RETRY';
+    retry.onclick = () => startLevel(idx);
+    endButtons.appendChild(retry);
+    const back = document.createElement('button');
+    back.textContent = 'LEVEL SELECT';
+    back.className = 'secondary';
+    back.onclick = () => showLevelSelect();
+    endButtons.appendChild(back);
+  }
+  function showLevelSelect() {
+    overlay.classList.remove('hidden');
+    endButtons.classList.add('hidden');
+    levelGrid.classList.remove('hidden');
+    overlayH1.textContent = 'MOVELY';
+    overlayH1.style.textShadow = '0 0 16px #ff5cf7, 0 0 32px #ff5cf7, 0 0 48px #5cffd6';
+    overlayP.innerHTML = `
+      A lovely alien is trapped in a room of lasers.<br>
+      Hold <span class="keys">W</span><span class="keys">A</span><span class="keys">S</span><span class="keys">D</span>
+      or arrows to move. Release to stop.<br>
+      Lasers fire on every beat — telegraphs warn you in advance. Each level is <b>3 minutes</b>.<br>
+      Pick a level. Survive to win.
+    `;
+  }
+
+  // ---------- RENDER ----------
+  function parseHex(h) {
+    const x = h.replace('#','');
+    return [parseInt(x.substr(0,2),16), parseInt(x.substr(2,2),16), parseInt(x.substr(4,2),16)];
+  }
+  function hexA(hex, a) { const [r,g,b] = parseHex(hex); return `rgba(${r},${g},${b},${a})`; }
+  function drawGlow(x, y, r, color) {
+    const g = ctx.createRadialGradient(x, y, 20, x, y, r);
+    g.addColorStop(0, color); g.addColorStop(1, 'transparent');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  }
+
+  function draw() {
+    const pulse = beatPulse;
+    const grd = ctx.createLinearGradient(0, 0, 0, H);
+    grd.addColorStop(0, currentLevel.bg[0]);
+    grd.addColorStop(1, currentLevel.bg[1]);
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = `rgba(255,255,255,${pulse * 0.04})`;
+    ctx.fillRect(0, 0, W, H);
+
+    drawGlow(W*0.25, H*0.25, 320, hexA(currentMode.color, 0.10 + pulse*0.10));
+    drawGlow(W*0.75, H*0.75, 320, hexA(currentMode.color, 0.10 + pulse*0.15));
+
+    drawArenaGrid();
+
+    ctx.save();
+    ctx.lineWidth = 3 + pulse * 4;
+    ctx.strokeStyle = hexA(currentMode.color, 0.7 + pulse*0.3);
+    ctx.shadowColor = currentMode.color;
+    ctx.shadowBlur = 14 + pulse * 18;
+    ctx.strokeRect(ARENA.x, ARENA.y, ARENA.w, ARENA.h);
+    ctx.restore();
+
+    drawBeatIndicator();
+
+    for (const tr of state.traps) drawTrap(tr);
+
+    for (const t of player.moveTrail) {
+      ctx.globalAlpha = (t.life / 0.3) * 0.4;
+      ctx.fillStyle = '#5cffd6';
+      ctx.beginPath();
+      ctx.arc(t.x, t.y, 6, 0, Math.PI*2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    drawPlayer();
+
+    for (const p of state.particles) {
+      ctx.globalAlpha = Math.max(0, p.life / 0.9);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(p.x - p.size/2, p.y - p.size/2, p.size, p.size);
+    }
+    ctx.globalAlpha = 1;
+
+    for (const f of state.floatTexts) {
+      ctx.globalAlpha = Math.max(0, f.life);
+      ctx.fillStyle = f.color;
+      ctx.font = 'bold 16px Trebuchet MS';
+      ctx.textAlign = 'center';
+      ctx.fillText(f.text, f.x, f.y);
+    }
+    ctx.globalAlpha = 1;
+    ctx.textAlign = 'start';
+
+    if (player.hurtFlash > 0) {
+      ctx.fillStyle = `rgba(255, 60, 80, ${player.hurtFlash * 0.5})`;
+      ctx.fillRect(0, 0, W, H);
+    }
+  }
+  function drawArenaGrid() {
+    ctx.save();
+    ctx.beginPath(); ctx.rect(ARENA.x, ARENA.y, ARENA.w, ARENA.h); ctx.clip();
+    ctx.fillStyle = 'rgba(15, 8, 36, 0.5)';
+    ctx.fillRect(ARENA.x, ARENA.y, ARENA.w, ARENA.h);
+    ctx.strokeStyle = hexA(currentMode.color, 0.10 + beatPulse*0.12);
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let x = ARENA.x; x <= ARENA.right; x += 40) { ctx.moveTo(x, ARENA.y); ctx.lineTo(x, ARENA.bottom); }
+    for (let y = ARENA.y; y <= ARENA.bottom; y += 40) { ctx.moveTo(ARENA.x, y); ctx.lineTo(ARENA.right, y); }
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawTrap(tr) {
+    const now = audioCtx ? audioCtx.currentTime : 0;
+    const inTele = now < tr.fireTime;
+    const u = inTele
+      ? Math.max(0, Math.min(1, (now - tr.telegraphStart) / (tr.fireTime - tr.telegraphStart)))
+      : 0;
+    const flicker = 0.25 + 0.75 * u;
+
+    if (tr.type === 'hLaser') {
+      drawBeamWarn({ x: ARENA.x, y: tr.y, w: ARENA.w, h: tr.h }, flicker, inTele, tr.firing, true);
+    } else if (tr.type === 'vLaser') {
+      drawBeamWarn({ x: tr.x, y: ARENA.y, w: tr.w, h: ARENA.h }, flicker, inTele, tr.firing, false);
+    } else if (tr.type === 'diagLaser') {
+      const cx = ARENA.x + ARENA.w/2, cy = ARENA.y + ARENA.h/2;
+      const angle = tr.dir > 0 ? Math.PI/4 : -Math.PI/4;
+      const dxL = Math.cos(angle), dyL = Math.sin(angle);
+      const x1 = cx - dxL*1000 + (-dyL)*tr.offset, y1 = cy - dyL*1000 + (dxL)*tr.offset;
+      const x2 = cx + dxL*1000 + (-dyL)*tr.offset, y2 = cy + dyL*1000 + (dxL)*tr.offset;
+      ctx.save(); ctx.beginPath(); ctx.rect(ARENA.x, ARENA.y, ARENA.w, ARENA.h); ctx.clip();
+      if (inTele) {
+        ctx.strokeStyle = hexA('#ff3b6b', flicker); ctx.lineWidth = tr.thickness;
+        ctx.setLineDash([12, 8]);
+        ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+      } else if (tr.firing) {
+        ctx.strokeStyle = '#ff3b6b'; ctx.lineWidth = tr.thickness;
+        ctx.shadowColor = '#ff3b6b'; ctx.shadowBlur = 25;
+        ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+        ctx.strokeStyle = '#fff'; ctx.lineWidth = 4; ctx.shadowBlur = 0;
+        ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+      }
+      ctx.restore();
+    } else if (tr.type === 'bomb') {
+      if (inTele) {
+        ctx.save();
+        ctx.strokeStyle = hexA('#ffc83b', flicker);
+        ctx.setLineDash([8,6]); ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(tr.cx, tr.cy, tr.r, 0, Math.PI*2); ctx.stroke();
+        ctx.fillStyle = hexA('#ffc83b', flicker * 0.15); ctx.fill();
+        ctx.restore();
+        ctx.strokeStyle = hexA('#ffc83b', flicker);
+        ctx.beginPath();
+        ctx.moveTo(tr.cx-12,tr.cy); ctx.lineTo(tr.cx+12,tr.cy);
+        ctx.moveTo(tr.cx,tr.cy-12); ctx.lineTo(tr.cx,tr.cy+12);
+        ctx.stroke();
+      } else if (tr.firing) {
+        const fu = (now - tr.fireTime) / tr.fireDuration;
+        ctx.save();
+        ctx.fillStyle = hexA('#ffc83b', 1 - fu*0.5);
+        ctx.shadowColor = '#ffaa00'; ctx.shadowBlur = 30;
+        ctx.beginPath(); ctx.arc(tr.cx, tr.cy, tr.r * (0.9 + fu*0.2), 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.beginPath(); ctx.arc(tr.cx, tr.cy, tr.r * 0.6 * (1 - fu), 0, Math.PI*2); ctx.fill();
+        ctx.restore();
+      }
+    } else if (tr.type === 'spikeWall') {
+      const r = spikeWallRect(tr);
+      if (inTele) {
+        ctx.save();
+        ctx.strokeStyle = hexA('#ff3b6b', flicker);
+        ctx.fillStyle = hexA('#ff3b6b', flicker * 0.18);
+        ctx.setLineDash([8,6]); ctx.lineWidth = 2;
+        ctx.fillRect(r.x, r.y, r.w, r.h);
+        ctx.strokeRect(r.x, r.y, r.w, r.h);
+        ctx.restore();
+      } else if (tr.firing) {
+        ctx.save();
+        ctx.fillStyle = '#3a0a1a'; ctx.fillRect(r.x, r.y, r.w, r.h);
+        ctx.strokeStyle = '#ff3b6b'; ctx.lineWidth = 2;
+        ctx.shadowColor = '#ff3b6b'; ctx.shadowBlur = 15;
+        ctx.strokeRect(r.x, r.y, r.w, r.h);
+        ctx.fillStyle = '#ff3b6b'; ctx.shadowBlur = 0;
+        const len = (tr.side % 2 === 0) ? r.w : r.h;
+        const sN = Math.floor(len / 16);
+        for (let i = 0; i < sN; i++) {
+          if (tr.side === 0) {
+            const sx = r.x + i*(r.w/sN);
+            ctx.beginPath();
+            ctx.moveTo(sx, r.y + r.h);
+            ctx.lineTo(sx + r.w/sN/2, r.y + r.h + 14);
+            ctx.lineTo(sx + r.w/sN, r.y + r.h);
+            ctx.closePath(); ctx.fill();
+          } else if (tr.side === 2) {
+            const sx = r.x + i*(r.w/sN);
+            ctx.beginPath();
+            ctx.moveTo(sx, r.y);
+            ctx.lineTo(sx + r.w/sN/2, r.y - 14);
+            ctx.lineTo(sx + r.w/sN, r.y);
+            ctx.closePath(); ctx.fill();
+          } else if (tr.side === 1) {
+            const sy = r.y + i*(r.h/sN);
+            ctx.beginPath();
+            ctx.moveTo(r.x, sy);
+            ctx.lineTo(r.x - 14, sy + r.h/sN/2);
+            ctx.lineTo(r.x, sy + r.h/sN);
+            ctx.closePath(); ctx.fill();
+          } else {
+            const sy = r.y + i*(r.h/sN);
+            ctx.beginPath();
+            ctx.moveTo(r.x + r.w, sy);
+            ctx.lineTo(r.x + r.w + 14, sy + r.h/sN/2);
+            ctx.lineTo(r.x + r.w, sy + r.h/sN);
+            ctx.closePath(); ctx.fill();
+          }
+        }
+        ctx.restore();
+      }
+    } else if (tr.type === 'bullet' || tr.type === 'homing') {
+      const c = tr.type === 'homing' ? '#ff5cf7' : '#5cffd6';
+      if (inTele) {
+        ctx.save();
+        ctx.strokeStyle = hexA(c, flicker);
+        ctx.setLineDash([6, 6]); ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(tr.startX, tr.startY);
+        const ex = tr.endX + (tr.endX - tr.startX) * 0.4;
+        const ey = tr.endY + (tr.endY - tr.startY) * 0.4;
+        ctx.lineTo(ex, ey);
+        ctx.stroke();
+        ctx.restore();
+        ctx.fillStyle = hexA(c, flicker);
+        ctx.beginPath(); ctx.arc(tr.startX, tr.startY, 6, 0, Math.PI*2); ctx.fill();
+      } else if (tr.curX !== undefined) {
+        ctx.save();
+        ctx.fillStyle = c; ctx.shadowColor = c; ctx.shadowBlur = 18;
+        ctx.beginPath(); ctx.arc(tr.curX, tr.curY, tr.size, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.beginPath(); ctx.arc(tr.curX, tr.curY, tr.size/2, 0, Math.PI*2); ctx.fill();
+        ctx.restore();
+      }
+    } else if (tr.type === 'swarm') {
+      if (inTele) {
+        ctx.save();
+        ctx.strokeStyle = hexA('#ffe14f', flicker);
+        ctx.setLineDash([6,6]); ctx.lineWidth = 2;
+        for (const b of tr.bullets) {
+          ctx.beginPath();
+          ctx.moveTo(b.startX, b.startY);
+          ctx.lineTo(b.startX + b.dirX * 800, b.startY + b.dirY * 800);
+          ctx.stroke();
+          ctx.fillStyle = hexA('#ffe14f', flicker);
+          ctx.beginPath(); ctx.arc(b.startX, b.startY, 6, 0, Math.PI*2); ctx.fill();
+        }
+        ctx.restore();
+      } else {
+        ctx.save();
+        ctx.fillStyle = '#ffe14f'; ctx.shadowColor = '#ffe14f'; ctx.shadowBlur = 16;
+        for (const b of tr.bullets) {
+          if (b.curX !== undefined) {
+            ctx.beginPath(); ctx.arc(b.curX, b.curY, b.size, 0, Math.PI*2); ctx.fill();
+          }
+        }
+        ctx.restore();
+      }
+    } else if (tr.type === 'pillar') {
+      const r = pillarRect(tr);
+      if (inTele) {
+        ctx.save();
+        ctx.strokeStyle = hexA('#ff3b6b', flicker);
+        ctx.fillStyle = hexA('#ff3b6b', flicker * 0.16);
+        ctx.setLineDash([10,8]); ctx.lineWidth = 2;
+        ctx.fillRect(r.x, r.y, r.w, r.h);
+        ctx.strokeRect(r.x, r.y, r.w, r.h);
+        ctx.restore();
+      } else if (tr.firing) {
+        ctx.save();
+        ctx.fillStyle = '#3a0a1a';
+        ctx.fillRect(r.x, r.y, r.w, r.h);
+        ctx.strokeStyle = '#ff3b6b'; ctx.lineWidth = 3;
+        ctx.shadowColor = '#ff3b6b'; ctx.shadowBlur = 20;
+        ctx.strokeRect(r.x, r.y, r.w, r.h);
+        ctx.strokeStyle = 'rgba(255, 60, 100, 0.6)';
+        ctx.lineWidth = 1; ctx.shadowBlur = 0;
+        ctx.beginPath();
+        for (let i = 0; i < r.w; i += 14) {
+          ctx.moveTo(r.x + i, r.y);
+          ctx.lineTo(r.x + i + 12, r.y + r.h);
+        }
+        ctx.stroke();
+        ctx.restore();
+      }
+    } else if (tr.type === 'rotLaser') {
+      const x2 = tr.cx + Math.cos(tr.currentAngle || tr.startAngle) * tr.length;
+      const y2 = tr.cy + Math.sin(tr.currentAngle || tr.startAngle) * tr.length;
+      if (inTele) {
+        ctx.save();
+        ctx.beginPath(); ctx.rect(ARENA.x, ARENA.y, ARENA.w, ARENA.h); ctx.clip();
+        ctx.strokeStyle = hexA('#ff3b6b', flicker);
+        ctx.setLineDash([10, 8]); ctx.lineWidth = tr.thickness;
+        ctx.beginPath(); ctx.moveTo(tr.cx, tr.cy); ctx.lineTo(x2, y2); ctx.stroke();
+        ctx.restore();
+        ctx.fillStyle = hexA('#ff3b6b', flicker);
+        ctx.beginPath(); ctx.arc(tr.cx, tr.cy, 8, 0, Math.PI*2); ctx.fill();
+      } else if (tr.firing) {
+        ctx.save();
+        ctx.beginPath(); ctx.rect(ARENA.x, ARENA.y, ARENA.w, ARENA.h); ctx.clip();
+        ctx.strokeStyle = '#ff3b6b'; ctx.lineWidth = tr.thickness;
+        ctx.shadowColor = '#ff3b6b'; ctx.shadowBlur = 25;
+        ctx.beginPath(); ctx.moveTo(tr.cx, tr.cy); ctx.lineTo(x2, y2); ctx.stroke();
+        ctx.strokeStyle = '#fff'; ctx.lineWidth = 4; ctx.shadowBlur = 0;
+        ctx.beginPath(); ctx.moveTo(tr.cx, tr.cy); ctx.lineTo(x2, y2); ctx.stroke();
+        ctx.restore();
+      }
+    } else if (tr.type === 'ring') {
+      if (inTele) {
+        ctx.save();
+        ctx.strokeStyle = hexA('#ff5cf7', flicker);
+        ctx.setLineDash([8,6]); ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(tr.cx, tr.cy, tr.rOuter, 0, Math.PI*2); ctx.stroke();
+        ctx.beginPath(); ctx.arc(tr.cx, tr.cy, tr.rInner, 0, Math.PI*2); ctx.stroke();
+        ctx.restore();
+      } else if (tr.firing) {
+        ctx.save();
+        ctx.fillStyle = 'rgba(255, 92, 247, 0.6)';
+        ctx.shadowColor = '#ff5cf7'; ctx.shadowBlur = 20;
+        ctx.beginPath();
+        ctx.arc(tr.cx, tr.cy, tr.rOuter, 0, Math.PI*2);
+        ctx.arc(tr.cx, tr.cy, tr.rInner, 0, Math.PI*2, true);
+        ctx.fill('evenodd');
+        ctx.restore();
+      }
+    } else if (tr.type === 'bouncer') {
+      if (inTele) {
+        // Show entry point with crosshair + arrow indicating direction.
+        ctx.save();
+        ctx.fillStyle = hexA('#ffaa3b', flicker);
+        ctx.beginPath(); ctx.arc(tr.bx, tr.by, 8, 0, Math.PI*2); ctx.fill();
+        ctx.strokeStyle = hexA('#ffaa3b', flicker);
+        ctx.setLineDash([6, 4]); ctx.lineWidth = 2;
+        const norm = Math.hypot(tr.vx, tr.vy) || 1;
+        const ux = tr.vx / norm, uy = tr.vy / norm;
+        ctx.beginPath();
+        ctx.moveTo(tr.bx, tr.by);
+        ctx.lineTo(tr.bx + ux * 90, tr.by + uy * 90);
+        ctx.stroke();
+        ctx.restore();
+      } else if (tr.firing) {
+        // Glowing orb with subtle trail.
+        ctx.save();
+        ctx.shadowColor = '#ffaa3b';
+        ctx.shadowBlur = 20;
+        ctx.fillStyle = '#ffaa3b';
+        ctx.beginPath();
+        ctx.arc(tr.bx, tr.by, tr.size, 0, Math.PI*2);
+        ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.shadowBlur = 0;
+        ctx.beginPath();
+        ctx.arc(tr.bx, tr.by, tr.size * 0.55, 0, Math.PI*2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+  }
+  function drawBeamWarn(beam, flicker, inTele, firing, horizontal) {
+    if (inTele) {
+      ctx.save();
+      ctx.strokeStyle = hexA('#ff3b6b', flicker);
+      ctx.lineWidth = 2; ctx.setLineDash([10, 8]);
+      ctx.strokeRect(beam.x, beam.y, beam.w, beam.h);
+      ctx.fillStyle = hexA('#ff3b6b', flicker * 0.18);
+      ctx.fillRect(beam.x, beam.y, beam.w, beam.h);
+      ctx.restore();
+      ctx.fillStyle = hexA('#ff3b6b', flicker);
+      if (horizontal) {
+        ctx.fillRect(ARENA.x - 14, beam.y - 4, 14, beam.h + 8);
+        ctx.fillRect(ARENA.right, beam.y - 4, 14, beam.h + 8);
+      } else {
+        ctx.fillRect(beam.x - 4, ARENA.y - 14, beam.w + 8, 14);
+        ctx.fillRect(beam.x - 4, ARENA.bottom, beam.w + 8, 14);
+      }
+    } else if (firing) {
+      ctx.save();
+      ctx.fillStyle = 'rgba(255, 60, 100, 0.95)';
+      ctx.shadowColor = '#ff3b6b'; ctx.shadowBlur = 25;
+      ctx.fillRect(beam.x, beam.y, beam.w, beam.h);
+      ctx.fillStyle = '#fff';
+      if (horizontal) ctx.fillRect(beam.x, beam.y + beam.h/2 - 2, beam.w, 4);
+      else ctx.fillRect(beam.x + beam.w/2 - 2, beam.y, 4, beam.h);
+      ctx.restore();
+    }
+  }
+
+  function drawPlayer() {
+    const px = player.x;
+    const py = player.y + Math.sin(player.bobPhase) * 2;
+    const w = player.w, h = player.h;
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.beginPath();
+    ctx.ellipse(px + w/2, py + h + 6, w/2 - 2, 3, 0, 0, Math.PI*2);
+    ctx.fill();
+
+    ctx.save();
+    ctx.translate(px + w/2, py + h/2);
+
+    const grad = ctx.createLinearGradient(0, -h/2, 0, h/2);
+    grad.addColorStop(0, '#a8ffec');
+    grad.addColorStop(0.5, '#5cffd6');
+    grad.addColorStop(1, '#22a888');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, w/2 - 2, h/2 - 4, 0, 0, Math.PI*2);
+    ctx.fill();
+    ctx.strokeStyle = '#0a0420'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.32)';
+    ctx.beginPath();
+    ctx.ellipse(-3, 5, w/3 - 4, h/3 - 4, 0, 0, Math.PI*2);
+    ctx.fill();
+
+    let rx = 0, ry = 0;
+    if (keys['w']||keys['arrowup']) ry -= 1;
+    if (keys['s']||keys['arrowdown']) ry += 1;
+    if (keys['a']||keys['arrowleft']) rx -= 1;
+    if (keys['d']||keys['arrowright']) rx += 1;
+    const tEye = transformDir(rx, ry);
+    const lx = tEye.x * 1.5;
+    const ly = tEye.y * 1.5;
+
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(-7, -5, 7, 0, Math.PI*2);
+    ctx.arc(7, -5, 7, 0, Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle = '#0a0420';
+    ctx.beginPath();
+    ctx.arc(-7 + lx, -5 + ly, 3.5, 0, Math.PI*2);
+    ctx.arc(7 + lx, -5 + ly, 3.5, 0, Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(-6 + lx, -7 + ly, 1.2, 0, Math.PI*2);
+    ctx.arc(8 + lx, -7 + ly, 1.2, 0, Math.PI*2);
+    ctx.fill();
+    ctx.strokeStyle = '#0a0420'; ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    ctx.arc(0, 6, 5, 0.1, Math.PI - 0.1);
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(255, 92, 247, 0.5)';
+    ctx.beginPath();
+    ctx.arc(-12, 4, 2.5, 0, Math.PI*2);
+    ctx.arc(12, 4, 2.5, 0, Math.PI*2);
+    ctx.fill();
+
+    ctx.strokeStyle = '#0a0420'; ctx.lineWidth = 2;
+    ctx.beginPath();
+    const antBob = Math.sin(player.bobPhase * 1.3) * 3;
+    ctx.moveTo(0, -h/2 + 2);
+    ctx.quadraticCurveTo(antBob, -h/2 - 4, antBob, -h/2 - 12);
+    ctx.stroke();
+    const antR = 5 + beatPulse * 3;
+    ctx.fillStyle = currentLevel.color;
+    ctx.shadowColor = currentLevel.color;
+    ctx.shadowBlur = 12 + beatPulse * 12;
+    ctx.beginPath();
+    ctx.arc(antBob, -h/2 - 14, antR, 0, Math.PI*2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    ctx.fillStyle = '#22a888';
+    ctx.beginPath();
+    ctx.ellipse(-8, h/2 - 2, 6, 3, 0, 0, Math.PI*2);
+    ctx.ellipse(8, h/2 - 2, 6, 3, 0, 0, Math.PI*2);
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  function drawBeatIndicator() {
+    if (!audioCtx) return;
+    const beatDur = getBeatDuration();
+    const elapsed = audioCtx.currentTime - songStartTime;
+    const beat = elapsed / beatDur;
+    const fract = beat - Math.floor(beat);
+    const cur = Math.max(0, Math.floor(beat)) % 4;
+    const x0 = W/2, y0 = 38;
+    for (let i = 0; i < 4; i++) {
+      const x = x0 - 60 + i*40;
+      const isCur = i === cur;
+      const scale = isCur ? (1.5 - fract*0.5) : 1;
+      const a = isCur ? 1 : 0.35;
+      ctx.save();
+      ctx.translate(x, y0);
+      ctx.rotate(Math.PI/4);
+      ctx.fillStyle = isCur ? hexA(currentLevel.color, a) : `rgba(255,255,255,${a})`;
+      const s = 7 * scale;
+      ctx.fillRect(-s, -s, s*2, s*2);
+      ctx.restore();
+    }
+  }
+
+  // ---------- LEVEL SELECT ----------
+  function buildLevelGrid() {
+    levelGrid.innerHTML = '';
+    LEVELS.forEach((lvl, i) => {
+      const el = document.createElement('div');
+      el.className = 'levelCard';
+      el.style.color = lvl.color;
+      el.style.borderColor = lvl.color;
+      const lengthLabel = lvl.endless ? '∞ ENDLESS' : '3:00';
+      const diffPct = Math.min(100, lvl.diff * 18);
+      el.innerHTML = `
+        <div class="num">${lvl.name.replace('LEVEL ', '')}</div>
+        <div class="sub">${lvl.subtitle}</div>
+        <div class="meta">${lvl.bpm} BPM · ${lengthLabel}</div>
+        <div class="diff"><div style="width:${diffPct}%"></div></div>
+      `;
+      el.onclick = () => startLevel(i);
+      levelGrid.appendChild(el);
+    });
+  }
+
+  function startLevel(idx) {
+    initAudio();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    startSession();   // fresh audio bus — cuts any leftover sounds from prior run
+    currentLevel = LEVELS[idx];
+    state.score = 0; state.combo = 0; state.bestCombo = 0;
+    state.survivedBeats = 0; state.elapsed = 0;
+    state.traps = []; state.particles = []; state.floatTexts = [];
+    state.gameOver = false; state.levelComplete = false;
+    player.x = ARENA.x + ARENA.w/2 - player.w/2;
+    player.y = ARENA.y + ARENA.h/2 - player.h/2;
+    player.hurtFlash = 0;
+    player.moveTrail = [];
+    nextBeatToSchedule = 0;
+    nextTrapBeat = 0;
+    pendingBeats.length = 0;
+    lastEndlessSpawnBeat = -999;
+    recentPresses.length = 0;
+    // Small fixed pre-roll. Trap planner has its own lookahead independent of audio.
+    songStartTime = audioCtx.currentTime + 0.25;
+    state.running = true;
+    overlay.classList.add('hidden');
+    levelGrid.classList.remove('hidden');
+    endButtons.classList.add('hidden');
+    levelInfoEl.textContent = `${currentLevel.name} — ${currentLevel.subtitle}`;
+    levelInfoEl.style.color = currentLevel.color;
+    setMode('NORMAL', false);
+  }
+
+  // ---------- LOOP ----------
+  let lastTime = 0;
+  function loop(t) {
+    const now = t / 1000;
+    const dt = Math.min(0.05, now - lastTime || 0);
+    lastTime = now;
+    update(dt);
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  buildLevelGrid();
+
+  function fitCanvas() {
+    const ratio = W / H;
+    let cw = window.innerWidth, ch = window.innerHeight;
+    if (cw / ch > ratio) cw = ch * ratio;
+    else ch = cw / ratio;
+    canvas.style.width = cw + 'px';
+    canvas.style.height = ch + 'px';
+  }
+  window.addEventListener('resize', fitCanvas);
+  fitCanvas();
+
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

@@ -209,6 +209,164 @@
     box-shadow: none;
   }
   #endButtons button:hover { transform: scale(1.06); }
+
+  /* ========== SETTINGS ========== */
+  #settingsLink {
+    margin-top: 16px; padding: 8px 18px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #ccddff;
+    font-size: 12px; letter-spacing: 3px;
+    border-radius: 4px; cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+  #settingsLink:hover {
+    background: rgba(92,255,214,0.06);
+    border-color: #5cffd6; color: #5cffd6;
+  }
+  #settingsPanel {
+    position: fixed; inset: 0;
+    background: rgba(5, 2, 26, 0.96);
+    z-index: 12;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+  }
+  .settingsBox {
+    background: rgba(20, 10, 40, 0.95);
+    border: 2px solid #5cffd6;
+    border-radius: 8px;
+    padding: 26px 28px;
+    width: 100%;
+    max-width: 460px;
+    box-shadow: 0 0 24px rgba(92, 255, 214, 0.3);
+    box-sizing: border-box;
+  }
+  .settingsBox h2 {
+    text-align: center; color: #5cffd6;
+    font-size: 26px; letter-spacing: 8px;
+    margin: 0 0 18px;
+    text-shadow: 0 0 12px rgba(92, 255, 214, 0.5);
+  }
+  .settingRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 0;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    gap: 14px;
+  }
+  .settingRow:first-of-type { border-top: none; }
+  .settingRow > label {
+    flex: 1;
+    font-size: 13px; letter-spacing: 2px;
+    color: #ccddff;
+  }
+  .settingRow input[type=range] {
+    width: 130px; accent-color: #5cffd6;
+  }
+  .settingRow .vol {
+    min-width: 36px; text-align: right; color: #5cffd6;
+    font-family: monospace; font-size: 13px;
+  }
+  .toggle {
+    width: 44px; height: 24px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 12px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  .toggle.on { background: #5cffd6; }
+  .toggle::after {
+    content: ''; width: 18px; height: 18px;
+    background: white; border-radius: 50%;
+    position: absolute; top: 3px; left: 3px;
+    transition: left 0.2s;
+  }
+  .toggle.on::after { left: 23px; }
+  .miniBtn {
+    padding: 8px 14px;
+    font-size: 12px; letter-spacing: 2px;
+    background: linear-gradient(135deg, #ffe14f, #5cffd6);
+    border: none; border-radius: 4px;
+    color: #0a0420; font-weight: bold; cursor: pointer;
+    font-family: inherit;
+  }
+  .settingsButtons {
+    display: flex; gap: 12px; margin-top: 22px;
+    justify-content: center;
+  }
+  .settingsButtons button {
+    padding: 10px 24px;
+    font-size: 13px; letter-spacing: 3px;
+    background: linear-gradient(135deg, #ff5cf7, #5cffd6);
+    border: 2px solid #fff; border-radius: 4px;
+    color: #0a0420; font-weight: bold; cursor: pointer;
+    font-family: inherit;
+  }
+  .settingsButtons button.secondary {
+    background: transparent;
+    border: 1px solid #888; color: #aaa;
+  }
+
+  /* ========== EDIT TOUCH KEYS MODE (mobile only) ========== */
+  #editPadsBanner {
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(20, 10, 40, 0.95);
+    border: 2px solid #ffe14f;
+    border-radius: 8px;
+    padding: 18px 22px;
+    text-align: center;
+    z-index: 11;
+    pointer-events: auto;
+    max-width: 300px;
+    box-shadow: 0 0 24px rgba(255, 225, 79, 0.4);
+  }
+  #editPadsBanner p {
+    font-size: 12px; letter-spacing: 1px; line-height: 1.6;
+    color: #ffe14f;
+    margin: 0 0 12px;
+  }
+  #editPadsBanner .row {
+    display: flex; gap: 8px; justify-content: center;
+    margin-top: 10px; align-items: center;
+  }
+  #editPadsBanner .row label {
+    font-size: 11px; color: #ccddff; letter-spacing: 2px;
+  }
+  #editPadsBanner input[type=range] {
+    width: 130px; accent-color: #ffe14f;
+  }
+  #editPadsBanner button {
+    padding: 8px 16px; font-size: 12px;
+    border: none; border-radius: 4px;
+    cursor: pointer; font-family: inherit; letter-spacing: 2px;
+    font-weight: bold;
+  }
+  #editPadsBanner button.primary {
+    background: linear-gradient(135deg, #ffe14f, #5cffd6);
+    color: #0a0420;
+  }
+  #editPadsBanner button.secondary {
+    background: transparent; border: 1px solid #888; color: #aaa;
+  }
+  .touchPad.editing {
+    outline: 3px dashed #ffe14f;
+    outline-offset: 4px;
+    border-radius: 12px;
+  }
+  .touchPad.editing .tBtn {
+    pointer-events: none;
+    border-style: dashed !important;
+    opacity: 0.85;
+  }
+
   .hidden { display: none !important; }
 
   /* ========== MOBILE LAYOUT ==========
@@ -307,7 +465,59 @@
     Pick a level. Survive to win.
   </p>
   <div class="levels" id="levelGrid"></div>
+  <button id="settingsLink">⚙ SETTINGS</button>
   <div id="endButtons" class="hidden"></div>
+</div>
+
+<!-- Settings panel -->
+<div id="settingsPanel" class="hidden">
+  <div class="settingsBox">
+    <h2>SETTINGS</h2>
+    <div class="settingRow">
+      <label>Music Volume</label>
+      <input type="range" id="volumeSlider" min="0" max="100">
+      <span class="vol" id="volumeValue">50</span>
+    </div>
+    <div class="settingRow">
+      <label>Beat Indicator</label>
+      <div class="toggle" id="beatIndicatorToggle"></div>
+    </div>
+    <div class="settingRow">
+      <label>Particles</label>
+      <div class="toggle" id="particlesToggle"></div>
+    </div>
+    <div class="settingRow">
+      <label>Show Combo &amp; Score</label>
+      <div class="toggle" id="hudToggle"></div>
+    </div>
+    <div class="settingRow">
+      <label>Touch Button Size</label>
+      <input type="range" id="btnSizeSlider" min="56" max="130">
+      <span class="vol" id="btnSizeValue">82</span>
+    </div>
+    <div class="settingRow">
+      <label>Touch Key Position</label>
+      <button class="miniBtn" id="editTouchKeysBtn">EDIT</button>
+    </div>
+    <div class="settingsButtons">
+      <button id="resetSettingsBtn" class="secondary">RESET</button>
+      <button id="closeSettingsBtn">DONE</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Touch Keys floating banner -->
+<div id="editPadsBanner" class="hidden">
+  <p>Drag the pads to reposition.<br>Adjust size with the slider.</p>
+  <div class="row">
+    <label>Size</label>
+    <input type="range" id="editSizeSlider" min="56" max="130">
+  </div>
+  <div class="row">
+    <button class="secondary" id="cancelEditPads">CANCEL</button>
+    <button class="secondary" id="resetEditPads">RESET</button>
+    <button class="primary" id="saveEditPads">DONE</button>
+  </div>
 </div>
 
 <script>
@@ -446,92 +656,673 @@
     },
   ];
 
-  // Hand-designed trap patterns. Each entry corresponds to a beat (0-indexed).
-  // null = no trap; an array of trap configs = traps that fire on that beat.
-  // Patterns loop at length, so the level repeats over its 3-minute duration.
+  // Destructure for compact pattern entries
+  const { h, v, d, b, hom, sw, bomb, sp, pil, rot, ring, bnc } = T;
+
+  // Hand-designed trap compositions. Each level is a UNIQUE 3-minute sequence
+  // that plays through once — no looping. Each level has its own theme and
+  // moves through distinct musical "movements" with no internal repetition.
   const LEVEL_PATTERNS = {
-    // LEVEL 1 — 48 beats. Brisk pace, bouncer intro, no rest after the lead-in.
+    // ============================================================
+    // LEVEL 1 — FIRST STEPS  (110 BPM, ~332 beats / 3:01)
+    // Theme: tutorial. Each movement introduces one trap family,
+    // then the second half weaves them together.
+    // ============================================================
     level1: [
-      null, null, null, null,                                                               // bar 1: 4-beat intro
-      [T.h(0.3)], null, [T.h(0.7)], null,                                                   // bar 2
-      [T.v(0.3)], [T.v(0.7)], null, [T.h(0.5)],                                             // bar 3
-      [T.bomb(0.3, 0.5)], null, [T.bomb(0.7, 0.5)], null,                                   // bar 4
-      [T.h(0.3), T.h(0.7)], null, [T.v(0.3), T.v(0.7)], null,                               // bar 5
-      [T.d(1, 0)], null, [T.d(-1, 0)], null,                                                // bar 6
-      [T.b(0, 0.3)], [T.b(0, 0.7)], [T.b(2, 0.3)], [T.b(2, 0.7)],                           // bar 7
-      [T.bnc(0)], null, [T.h(0.5)], null,                                                   // bar 8 — bouncer enters
-      [T.bomb(0.5, 0.5)], null, [T.h(0.4), T.h(0.6)], null,                                 // bar 9
-      [T.bnc(2), T.v(0.5)], null, [T.h(0.5)], null,                                         // bar 10
-      [T.h(0.5), T.v(0.5)], null, [T.d(1, 0), T.d(-1, 0)], null,                            // bar 11
-      [T.bomb(0.3, 0.3), T.bomb(0.7, 0.7)], null, [T.bnc(1)], null,                         // bar 12
+      // M1 (bars 1-2): silent intro
+      null, null, null, null,
+      null, null, null, null,
+      // M2 (bars 3-6): horizontal lasers — sweep up, sweep down, sweep mid, pair
+      [h(0.3)], null, [h(0.5)], null,
+      [h(0.7)], null, [h(0.5)], null,
+      [h(0.3)], null, [h(0.7)], null,
+      [h(0.3), h(0.7)], null, [h(0.5)], null,
+      // M3 (bars 7-10): vertical lasers — same shape rotated
+      [v(0.3)], null, [v(0.5)], null,
+      [v(0.7)], null, [v(0.5)], null,
+      [v(0.3)], null, [v(0.7)], null,
+      [v(0.3), v(0.7)], null, [v(0.5)], null,
+      // M4 (bars 11-14): cross combos — horizontal meets vertical
+      [h(0.5), v(0.5)], null, [h(0.3)], [v(0.7)],
+      [h(0.7)], [v(0.3)], null, [h(0.5), v(0.5)],
+      [h(0.3), v(0.7)], null, [h(0.7), v(0.3)], null,
+      [h(0.5), v(0.3), v(0.7)], null, [v(0.5), h(0.3), h(0.7)], null,
+      // M5 (bars 15-18): bullets from each side
+      [b(0, 0.3)], null, [b(0, 0.7)], null,
+      [b(2, 0.3)], null, [b(2, 0.7)], null,
+      [b(1, 0.5)], null, [b(3, 0.5)], null,
+      [b(0, 0.3), b(0, 0.7)], null, [b(2, 0.3), b(2, 0.7)], null,
+      // M6 (bars 19-22): bombs — corners, center, edges
+      [bomb(0.3, 0.3)], null, [bomb(0.7, 0.7)], null,
+      [bomb(0.3, 0.7)], null, [bomb(0.7, 0.3)], null,
+      [bomb(0.5, 0.5)], null, [bomb(0.3, 0.5), bomb(0.7, 0.5)], null,
+      [bomb(0.5, 0.3), bomb(0.5, 0.7)], null, [bomb(0.5, 0.5)], null,
+      // M7 (bars 23-26): bouncer introduction — let one bounce, then mix
+      [bnc(0)], null, null, null,
+      [h(0.5)], null, [v(0.5)], null,
+      [bnc(2)], null, null, [h(0.3), h(0.7)],
+      [bnc(1)], null, [bnc(3)], null,
+      // M8 (bars 27-30): diagonals — both directions, offsets
+      [d(1, 0)], null, [d(-1, 0)], null,
+      [d(1, 0.3)], null, [d(-1, -0.3)], null,
+      [d(1, 0)], [d(-1, 0)], null, [h(0.5)],
+      [d(1, -0.3)], [d(-1, 0.3)], null, [v(0.5)],
+      // M9 (bars 31-34): pair patterns — symmetric
+      [h(0.3), h(0.7)], null, [v(0.3), v(0.7)], null,
+      [h(0.4), h(0.6)], null, [v(0.4), v(0.6)], null,
+      [h(0.3), v(0.3)], null, [h(0.7), v(0.7)], null,
+      [h(0.3), v(0.7)], null, [h(0.7), v(0.3)], null,
+      // M10 (bars 35-38): bouncer + lasers
+      [bnc(0), v(0.5)], null, [h(0.5)], null,
+      [bnc(2), h(0.5)], null, [v(0.5)], null,
+      [bnc(1), h(0.3)], null, [bnc(3), h(0.7)], null,
+      [bnc(0), bnc(2)], null, [h(0.5), v(0.5)], null,
+      // M11 (bars 39-42): bullet + laser layered
+      [b(0, 0.3), h(0.7)], null, [b(0, 0.7), h(0.3)], null,
+      [b(2, 0.3), h(0.7)], null, [b(2, 0.7), h(0.3)], null,
+      [b(1, 0.5), v(0.3)], null, [b(3, 0.5), v(0.7)], null,
+      [b(0), b(2)], null, [b(1), b(3)], null,
+      // M12 (bars 43-46): bomb + laser
+      [bomb(0.3, 0.5), h(0.7)], null, [bomb(0.7, 0.5), h(0.3)], null,
+      [bomb(0.5, 0.3), v(0.7)], null, [bomb(0.5, 0.7), v(0.3)], null,
+      [bomb(0.3, 0.3), bomb(0.7, 0.7)], null, [bomb(0.5, 0.5)], null,
+      [bomb(0.3, 0.7), bomb(0.7, 0.3)], null, [h(0.3), h(0.7)], null,
+      // M13 (bars 47-50): triple lasers
+      [h(0.3), h(0.5), h(0.7)], null, null, [v(0.5)],
+      [v(0.3), v(0.5), v(0.7)], null, null, [h(0.5)],
+      [h(0.3), v(0.3), h(0.7), v(0.7)], null, null, null,
+      [h(0.5), v(0.5), d(1, 0)], null, [d(-1, 0)], null,
+      // M14 (bars 51-54): combo escalation
+      [bomb(0.5, 0.5), h(0.3), h(0.7)], null, [v(0.3), v(0.7)], null,
+      [bnc(0), bnc(2), h(0.5)], null, [v(0.5)], null,
+      [d(1, 0), d(-1, 0), v(0.5)], null, [bomb(0.5, 0.5)], null,
+      [h(0.5), v(0.5), bnc(1)], null, [bnc(3)], null,
+      // M15 (bars 55-58): rapid fire — every beat
+      [h(0.3)], [v(0.3)], [h(0.7)], [v(0.7)],
+      [h(0.5)], [v(0.5)], [d(1, 0)], [d(-1, 0)],
+      [bnc(0)], [b(2, 0.5)], [bnc(2)], [b(0, 0.5)],
+      [bomb(0.3, 0.3)], [bomb(0.7, 0.7)], [bomb(0.3, 0.7)], [bomb(0.7, 0.3)],
+      // M16 (bars 59-62): bullet rain
+      [b(0, 0.3), b(0, 0.7)], [b(2, 0.3), b(2, 0.7)], null, [h(0.5)],
+      [b(1, 0.3), b(1, 0.7)], [b(3, 0.3), b(3, 0.7)], null, [v(0.5)],
+      [b(0), b(1), b(2), b(3)], null, null, [bomb(0.5, 0.5)],
+      [sw(0)], null, [sw(2)], null,
+      // M17 (bars 63-66): bouncer storm
+      [bnc(0), bomb(0.5, 0.5)], null, [bnc(2), h(0.5)], null,
+      [bnc(1), v(0.5)], null, [bnc(3), h(0.5)], null,
+      [bnc(0), bnc(2), v(0.5)], null, [bnc(1), bnc(3), h(0.5)], null,
+      [bnc(0), bnc(1), bnc(2), bnc(3)], null, null, [bomb(0.5, 0.5)],
+      // M18 (bars 67-70): cross attacks
+      [h(0.5), v(0.5), bomb(0.3, 0.3)], null, [h(0.5), v(0.5), bomb(0.7, 0.7)], null,
+      [d(1, 0), d(-1, 0), h(0.5)], null, [d(1, 0), d(-1, 0), v(0.5)], null,
+      [h(0.3), h(0.7), v(0.3), v(0.7), bomb(0.5, 0.5)], null, null, [bnc(0)],
+      [d(1, 0.3), d(-1, -0.3), h(0.5)], null, [d(1, -0.3), d(-1, 0.3), v(0.5)], null,
+      // M19 (bars 71-74): pre-finale
+      [bomb(0.3, 0.3), bomb(0.7, 0.7), h(0.5)], null, [bomb(0.3, 0.7), bomb(0.7, 0.3), v(0.5)], null,
+      [bnc(0), bnc(2), h(0.3), h(0.7)], null, [bnc(1), bnc(3), v(0.3), v(0.7)], null,
+      [b(0, 0.3), b(0, 0.7), b(2, 0.3), b(2, 0.7)], null, [b(1, 0.5), b(3, 0.5), bomb(0.5, 0.5)], null,
+      [d(1, 0), d(-1, 0), bomb(0.5, 0.5)], null, [h(0.3), h(0.5), h(0.7)], null,
+      // M20 (bars 75-78): finale buildup
+      [h(0.5), v(0.5), d(1, 0), d(-1, 0)], null, null, [bnc(0), bnc(2)],
+      [bomb(0.3, 0.3), bomb(0.7, 0.7), bomb(0.3, 0.7), bomb(0.7, 0.3)], null, null, [h(0.5)],
+      [bnc(0), bnc(1), bnc(2), bnc(3)], null, null, [v(0.5)],
+      [h(0.3), v(0.3), h(0.7), v(0.7), bomb(0.5, 0.5)], null, [d(1, 0), d(-1, 0)], null,
+      // M21 (bars 79-83): finale climax
+      [bomb(0.5, 0.5), h(0.3), h(0.7), v(0.3), v(0.7)], null, null, null,
+      [bnc(0), bnc(2), bomb(0.5, 0.5), h(0.5), v(0.5)], null, null, null,
+      [d(1, 0), d(-1, 0), h(0.5), v(0.5), bomb(0.5, 0.5)], null, null, null,
+      [bnc(0), bnc(1), bnc(2), bnc(3), bomb(0.5, 0.5)], null, null, null,
+      [h(0.5), v(0.5), d(1, 0), d(-1, 0), bomb(0.5, 0.5)], null, null, null,
     ],
-    // LEVEL 2 — 48 beats. Already dense from beat one. Two bouncers.
+
+    // ============================================================
+    // LEVEL 2 — CITY LIGHTS  (124 BPM, ~376 beats / 3:02)
+    // Theme: pulse-driven, downbeats hit hard. Every bar's beat 1
+    // has a trap; verses build, chorus crashes.
+    // ============================================================
     level2: [
-      [T.h(0.3)], [T.h(0.7)], [T.v(0.3)], [T.v(0.7)],
-      [T.bomb(0.3, 0.3)], null, [T.bomb(0.7, 0.7)], null,
-      [T.h(0.5), T.v(0.5)], null, [T.d(1, 0), T.d(-1, 0)], null,
-      [T.b(0, 0.3), T.b(0, 0.7)], null, [T.b(2, 0.3), T.b(2, 0.7)], null,
-      [T.bnc(0)], null, [T.h(0.5)], [T.v(0.5)],
-      [T.sw(0)], null, [T.sw(2)], null,
-      [T.h(0.3), T.v(0.3)], [T.h(0.7), T.v(0.7)], null, [T.bomb(0.5, 0.5)],
-      [T.bnc(1), T.bnc(3)], null, null, [T.h(0.5)],
-      [T.d(1, 0.3)], [T.d(-1, -0.3)], [T.h(0.3), T.h(0.7)], null,
-      [T.bomb(0.3, 0.7), T.bomb(0.7, 0.3)], null, [T.b(0), T.b(2)], null,
-      [T.v(0.3), T.v(0.7)], [T.h(0.3), T.h(0.7)], null, [T.bnc(0)],
-      [T.h(0.5), T.v(0.5)], [T.d(1, 0), T.d(-1, 0)], [T.bomb(0.5, 0.5)], null,
+      // Verse 1 (bars 1-8): paired lasers on every downbeat
+      [h(0.3)], null, [h(0.7)], null,
+      [v(0.3)], null, [v(0.7)], null,
+      [h(0.3), h(0.7)], null, [v(0.3), v(0.7)], null,
+      [h(0.5), v(0.5)], null, [bomb(0.5, 0.5)], null,
+      [h(0.4)], [h(0.6)], [v(0.4)], [v(0.6)],
+      [h(0.3), v(0.3)], null, [h(0.7), v(0.7)], null,
+      [bomb(0.3, 0.3)], null, [bomb(0.7, 0.7)], null,
+      [d(1, 0)], null, [d(-1, 0)], null,
+      // Pre-chorus (bars 9-12): bullet barrage
+      [b(0, 0.3)], [b(0, 0.7)], [b(2, 0.3)], [b(2, 0.7)],
+      [b(1, 0.4)], [b(1, 0.6)], [b(3, 0.4)], [b(3, 0.6)],
+      [b(0), b(2)], null, [b(1), b(3)], null,
+      [b(0, 0.3), b(0, 0.7), b(2, 0.3), b(2, 0.7)], null, null, [bomb(0.5, 0.5)],
+      // Chorus (bars 13-20): cross + bouncer hits
+      [h(0.5), v(0.5), bnc(0)], null, [h(0.3), h(0.7)], null,
+      [v(0.3), v(0.7)], null, [bomb(0.5, 0.5), bnc(2)], null,
+      [h(0.3), v(0.3)], [h(0.7), v(0.7)], null, [d(1, 0), d(-1, 0)],
+      [bnc(1), h(0.5)], null, [bnc(3), v(0.5)], null,
+      [bomb(0.3, 0.3), bomb(0.7, 0.7)], null, [bomb(0.3, 0.7), bomb(0.7, 0.3)], null,
+      [h(0.5), v(0.5), d(1, 0), d(-1, 0)], null, null, [bnc(0)],
+      [bnc(0), bnc(2), h(0.5)], null, [bnc(1), bnc(3), v(0.5)], null,
+      [h(0.3), h(0.5), h(0.7), bomb(0.5, 0.5)], null, null, [v(0.5)],
+      // Verse 2 (bars 21-28): bouncer-led variations
+      [bnc(0), v(0.3)], null, [bnc(2), v(0.7)], null,
+      [bnc(1), h(0.3)], null, [bnc(3), h(0.7)], null,
+      [h(0.3), h(0.7), bnc(0)], null, [v(0.3), v(0.7), bnc(2)], null,
+      [bomb(0.3, 0.5), bnc(1)], null, [bomb(0.7, 0.5), bnc(3)], null,
+      [d(1, 0), bnc(0)], null, [d(-1, 0), bnc(2)], null,
+      [h(0.5), v(0.5), bomb(0.3, 0.3)], null, [bomb(0.7, 0.7)], null,
+      [bnc(0), bnc(1)], [bnc(2), bnc(3)], null, [h(0.5)],
+      [h(0.3), h(0.7), v(0.3), v(0.7)], null, null, [bomb(0.5, 0.5)],
+      // Bridge (bars 29-36): swarms + diagonals
+      [sw(0)], null, [sw(1)], null,
+      [sw(2)], null, [sw(3)], null,
+      [d(1, 0)], [d(-1, 0)], [d(1, 0.4)], [d(-1, -0.4)],
+      [d(1, -0.3)], [d(-1, 0.3)], [d(1, 0.3)], [d(-1, -0.3)],
+      [sw(0), sw(2)], null, [sw(1), sw(3)], null,
+      [d(1, 0), d(-1, 0), h(0.5)], null, [d(1, 0), d(-1, 0), v(0.5)], null,
+      [sw(0), bomb(0.5, 0.5)], null, [sw(2), bnc(0)], null,
+      [d(1, 0), d(-1, 0), d(1, 0.4), d(-1, -0.4)], null, null, [h(0.5), v(0.5)],
+      // Chorus 2 (bars 37-44): denser cross attacks
+      [h(0.3), h(0.7), bnc(0)], null, [v(0.3), v(0.7), bnc(2)], null,
+      [bomb(0.3, 0.3), bomb(0.7, 0.7), h(0.5)], null, [bomb(0.3, 0.7), bomb(0.7, 0.3), v(0.5)], null,
+      [bnc(0), bnc(2), h(0.5)], null, [bnc(1), bnc(3), v(0.5)], null,
+      [d(1, 0), d(-1, 0), bomb(0.5, 0.5)], null, [h(0.3), v(0.3), h(0.7), v(0.7)], null,
+      [b(0, 0.3), b(0, 0.7), bnc(2)], null, [b(2, 0.3), b(2, 0.7), bnc(0)], null,
+      [h(0.5), v(0.5), d(1, 0), d(-1, 0)], null, null, [bomb(0.5, 0.5)],
+      [bnc(0), bnc(1), bnc(2), bnc(3)], null, null, [h(0.5), v(0.5)],
+      [h(0.3), h(0.5), h(0.7), v(0.5), bomb(0.5, 0.5)], null, null, null,
+      // Outro climax (bars 45-94): I'll repeat using FRESH phrases so it's ~94 bars
+      // Continuing with new content
+      [bomb(0.5, 0.5), h(0.3), h(0.7)], null, [bomb(0.5, 0.5), v(0.3), v(0.7)], null,
+      [bnc(0), v(0.3), v(0.7)], null, [bnc(2), h(0.3), h(0.7)], null,
+      [d(1, 0.3), d(-1, -0.3), bomb(0.5, 0.5)], null, [d(1, -0.3), d(-1, 0.3), bnc(0)], null,
+      [b(0), b(1), b(2), b(3)], null, [bomb(0.3, 0.3), bomb(0.7, 0.7), bomb(0.3, 0.7), bomb(0.7, 0.3)], null,
+      [h(0.5), v(0.5), bnc(0), bnc(2)], null, [d(1, 0), d(-1, 0), bnc(1), bnc(3)], null,
+      [sw(0), sw(2), h(0.5)], null, [sw(1), sw(3), v(0.5)], null,
+      [bomb(0.5, 0.5), h(0.3), h(0.7), v(0.3), v(0.7)], null, null, [bnc(0), bnc(2)],
+      [bnc(0), bnc(1), bnc(2), bnc(3), h(0.5)], null, null, [v(0.5)],
+      // Final climax (bars 53-94)
+      [d(1, 0), d(-1, 0), h(0.5), v(0.5)], null, null, [bomb(0.5, 0.5)],
+      [bnc(0), bomb(0.3, 0.3)], [bnc(1), bomb(0.7, 0.3)], [bnc(2), bomb(0.7, 0.7)], [bnc(3), bomb(0.3, 0.7)],
+      [h(0.3), v(0.7), d(1, 0)], null, [h(0.7), v(0.3), d(-1, 0)], null,
+      [b(0, 0.3), b(0, 0.7), bomb(0.5, 0.5)], null, [b(2, 0.3), b(2, 0.7), bomb(0.5, 0.5)], null,
+      [h(0.3), h(0.7), v(0.3), v(0.7), bnc(0)], null, [bomb(0.5, 0.5), bnc(2)], null,
+      [bnc(0), bnc(2), d(1, 0), d(-1, 0)], null, [h(0.5), v(0.5), bomb(0.5, 0.5)], null,
+      [sw(0), sw(2), bnc(0), bnc(2)], null, null, [h(0.5)],
+      [bnc(0), bnc(1), bnc(2), bnc(3), h(0.5), v(0.5)], null, null, null,
+      [d(1, 0), d(-1, 0), bomb(0.3, 0.3), bomb(0.7, 0.7)], null, [bomb(0.3, 0.7), bomb(0.7, 0.3), h(0.5)], null,
+      [h(0.3), v(0.3), h(0.7), v(0.7), bomb(0.5, 0.5)], null, null, [bnc(0), bnc(2)],
+      [bnc(1), bnc(3), d(1, 0), d(-1, 0), v(0.5)], null, null, [h(0.5)],
+      [b(0), b(1), b(2), b(3), bomb(0.5, 0.5)], null, null, [bnc(0)],
+      [h(0.5), v(0.5), bomb(0.5, 0.5), d(1, 0), d(-1, 0)], null, null, null,
+      [bnc(0), bnc(2), bomb(0.3, 0.3), bomb(0.7, 0.7), h(0.5)], null, null, null,
+      [bnc(1), bnc(3), bomb(0.3, 0.7), bomb(0.7, 0.3), v(0.5)], null, null, null,
+      [h(0.3), h(0.5), h(0.7), v(0.3), v(0.5), v(0.7)], null, null, null,
+      [bnc(0), bnc(1), bnc(2), bnc(3), bomb(0.5, 0.5)], null, null, [d(1, 0), d(-1, 0)],
+      // EXTENSION (bars 70-93): unique content to fill 3 min @ 124 BPM
+      // Movement X: laser tide
+      [h(0.2)], null, [h(0.8)], null,
+      [h(0.4)], null, [h(0.6)], null,
+      [v(0.2)], null, [v(0.8)], null,
+      [v(0.4)], null, [v(0.6)], null,
+      [h(0.2), v(0.2)], null, [h(0.8), v(0.8)], null,
+      [h(0.4), h(0.6)], null, [v(0.4), v(0.6)], null,
+      // Movement Y: bouncer waves
+      [bnc(0), h(0.4)], null, [bnc(2), h(0.6)], null,
+      [bnc(1), v(0.4)], null, [bnc(3), v(0.6)], null,
+      [bnc(0), bnc(2), bomb(0.4, 0.4)], null, [bnc(1), bnc(3), bomb(0.6, 0.6)], null,
+      [bnc(0), bnc(2), d(1, 0.2)], null, [bnc(1), bnc(3), d(-1, -0.2)], null,
+      // Movement Z: bullet curtain
+      [b(0, 0.2), b(0, 0.5), b(0, 0.8)], null, [b(2, 0.2), b(2, 0.5), b(2, 0.8)], null,
+      [b(1, 0.2), b(1, 0.8)], null, [b(3, 0.2), b(3, 0.8)], null,
+      [sw(0), sw(2)], null, [sw(1), sw(3)], null,
+      // Movement W: cross blast
+      [h(0.4), v(0.4), bomb(0.6, 0.6)], null, [h(0.6), v(0.6), bomb(0.4, 0.4)], null,
+      [d(1, 0.2), d(-1, 0.2), h(0.5)], null, [d(1, -0.2), d(-1, -0.2), v(0.5)], null,
+      [bomb(0.2, 0.5), bomb(0.8, 0.5), bnc(0)], null, [bomb(0.5, 0.2), bomb(0.5, 0.8), bnc(2)], null,
+      // Final coda
+      [h(0.3), h(0.5), h(0.7), bnc(0)], null, [v(0.3), v(0.5), v(0.7), bnc(2)], null,
+      [d(1, 0), d(-1, 0), bomb(0.5, 0.5), bnc(0), bnc(2)], null, null, [bnc(1), bnc(3)],
+      [bomb(0.4, 0.4), bomb(0.6, 0.6), bomb(0.4, 0.6), bomb(0.6, 0.4), h(0.5), v(0.5)], null, null, null,
+      [bnc(0), bnc(1), bnc(2), bnc(3), d(1, 0), d(-1, 0), h(0.5), v(0.5), bomb(0.5, 0.5)], null, null, null,
+      // Final tail (bars 94-98): outro fade
+      [h(0.3), v(0.7)], null, [h(0.7), v(0.3)], null,
+      [bomb(0.3, 0.5), bnc(0)], null, [bomb(0.7, 0.5), bnc(2)], null,
+      [d(1, 0.3), d(-1, -0.3), bomb(0.5, 0.5)], null, [d(1, -0.3), d(-1, 0.3), h(0.5)], null,
+      [bnc(0), bnc(2), v(0.5), bomb(0.5, 0.5)], null, [bnc(1), bnc(3), h(0.5), bomb(0.5, 0.5)], null,
+      [h(0.3), h(0.5), h(0.7), v(0.3), v(0.5), v(0.7), bomb(0.5, 0.5), bnc(0), bnc(2)], null, null, null,
     ],
-    // LEVEL 3 — 64 beats. Breakbeat density: bullets, homing, multi-traps every beat.
+
+    // ============================================================
+    // LEVEL 3 — BREAKBEAT  (140 BPM, ~424 beats / 3:01)
+    // Theme: chaotic off-beat patterns with diagonals, bullets,
+    // and homing missiles. Every beat counts.
+    // ============================================================
     level3: [
-      [T.d(1, 0)], [T.d(-1, 0)], [T.h(0.5)], [T.v(0.5)],
-      [T.h(0.3), T.v(0.3)], [T.h(0.7), T.v(0.7)], null, [T.hom(0)],
-      [T.bomb(0.5, 0.5)], null, [T.bnc(0)], null,
-      [T.b(0)], [T.b(1)], [T.b(2)], [T.b(3)],
-      [T.d(1, 0.3)], [T.d(-1, -0.3)], [T.bomb(0.3, 0.7), T.bomb(0.7, 0.3)], null,
-      [T.hom(0)], [T.hom(2)], [T.h(0.5), T.v(0.5)], null,
-      [T.h(0.3), T.h(0.7)], [T.v(0.3), T.v(0.7)], null, [T.sw(0)],
-      [T.bnc(1), T.bnc(3)], null, [T.h(0.5)], null,
-      [T.d(1, 0), T.d(-1, 0)], [T.h(0.4), T.h(0.6)], null, [T.bomb(0.5, 0.5)],
-      [T.b(0, 0.3), T.b(0, 0.7)], [T.b(2, 0.3), T.b(2, 0.7)], [T.hom(1)], null,
-      [T.h(0.3), T.h(0.7)], [T.v(0.3), T.v(0.7)], [T.bnc(0)], null,
-      [T.d(1, 0), T.d(-1, 0), T.h(0.5)], null, [T.v(0.3), T.v(0.7), T.hom(0)], null,
-      [T.bomb(0.3, 0.3), T.bomb(0.7, 0.7)], [T.bomb(0.3, 0.7), T.bomb(0.7, 0.3)], null, [T.bnc(2)],
-      [T.h(0.5), T.v(0.5), T.d(1, 0), T.d(-1, 0)], null, null, [T.hom(0), T.hom(2)],
-      [T.b(0), T.b(2)], [T.b(1), T.b(3)], [T.bnc(0), T.bnc(1)], null,
-      [T.h(0.3), T.v(0.3)], [T.h(0.7), T.v(0.7)], [T.bomb(0.5, 0.5)], [T.h(0.5)],
+      // M1 (bars 1-4): diagonal storm — never stops
+      [d(1, 0)], [d(-1, 0)], [d(1, 0.3)], [d(-1, -0.3)],
+      [d(1, -0.3)], [d(-1, 0.3)], [d(1, 0)], [d(-1, 0)],
+      [d(1, 0), d(-1, 0)], null, [h(0.5)], [v(0.5)],
+      [d(1, 0.3), d(-1, -0.3)], null, [d(1, -0.3), d(-1, 0.3)], null,
+      // M2 (bars 5-8): bullets from all 4 sides
+      [b(0, 0.3)], [b(1, 0.3)], [b(2, 0.7)], [b(3, 0.7)],
+      [b(0, 0.7)], [b(1, 0.7)], [b(2, 0.3)], [b(3, 0.3)],
+      [b(0), b(2)], [b(1), b(3)], null, [bomb(0.5, 0.5)],
+      [b(0, 0.3), b(0, 0.7), b(2, 0.3), b(2, 0.7)], null, null, [h(0.5)],
+      // M3 (bars 9-12): homing missiles
+      [hom(0)], null, [hom(1)], null,
+      [hom(2)], null, [hom(3)], null,
+      [hom(0), hom(2)], null, [hom(1), hom(3)], null,
+      [hom(0), hom(1), hom(2), hom(3)], null, null, [bomb(0.5, 0.5)],
+      // M4 (bars 13-16): diagonals + bullets layered
+      [d(1, 0), b(0, 0.5)], null, [d(-1, 0), b(2, 0.5)], null,
+      [d(1, 0.3), b(1, 0.5)], null, [d(-1, -0.3), b(3, 0.5)], null,
+      [d(1, 0), d(-1, 0), b(0)], null, [d(1, 0), d(-1, 0), b(2)], null,
+      [d(1, 0), d(-1, 0), bomb(0.5, 0.5)], null, [hom(0), hom(2)], null,
+      // M5 (bars 17-20): bombs at edges
+      [bomb(0.2, 0.2)], [bomb(0.8, 0.2)], [bomb(0.2, 0.8)], [bomb(0.8, 0.8)],
+      [bomb(0.5, 0.2)], null, [bomb(0.5, 0.8)], null,
+      [bomb(0.2, 0.5)], null, [bomb(0.8, 0.5)], null,
+      [bomb(0.3, 0.3), bomb(0.7, 0.3), bomb(0.3, 0.7), bomb(0.7, 0.7)], null, null, [h(0.5)],
+      // M6 (bars 21-24): chaotic mix
+      [d(1, 0), bomb(0.3, 0.5)], null, [d(-1, 0), bomb(0.7, 0.5)], null,
+      [hom(0), b(2)], null, [hom(2), b(0)], null,
+      [bnc(0), d(1, 0)], null, [bnc(2), d(-1, 0)], null,
+      [d(1, 0), d(-1, 0), bomb(0.5, 0.5), hom(1)], null, null, [h(0.5)],
+      // M7 (bars 25-28): bullet swarms
+      [sw(0)], [sw(1)], [sw(2)], [sw(3)],
+      [sw(0), sw(2)], null, [sw(1), sw(3)], null,
+      [b(0, 0.3), b(0, 0.7)], [b(2, 0.3), b(2, 0.7)], null, [d(1, 0), d(-1, 0)],
+      [sw(0), sw(2), bomb(0.5, 0.5)], null, [sw(1), sw(3), h(0.5)], null,
+      // M8 (bars 29-32): bouncers + diagonals
+      [bnc(0), d(1, 0)], null, [bnc(2), d(-1, 0)], null,
+      [bnc(1), d(1, 0.3)], null, [bnc(3), d(-1, -0.3)], null,
+      [bnc(0), bnc(2)], null, [bnc(1), bnc(3)], null,
+      [bnc(0), bnc(1), bnc(2), bnc(3)], null, null, [d(1, 0), d(-1, 0)],
+      // M9 (bars 33-36): off-beat lasers
+      null, [h(0.3)], null, [h(0.7)],
+      null, [v(0.3)], null, [v(0.7)],
+      [h(0.5)], [v(0.5)], [h(0.3)], [v(0.7)],
+      [h(0.7)], [v(0.3)], [h(0.5), v(0.5)], null,
+      // M10 (bars 37-40): triple combos
+      [h(0.3), h(0.7), v(0.5)], null, [v(0.3), v(0.7), h(0.5)], null,
+      [bomb(0.5, 0.5), d(1, 0), d(-1, 0)], null, [hom(0), hom(2), h(0.5)], null,
+      [b(0), b(2), bnc(1)], null, [b(1), b(3), bnc(0)], null,
+      [d(1, 0), d(-1, 0), bomb(0.3, 0.3), bomb(0.7, 0.7)], null, null, [h(0.5)],
+      // M11 (bars 41-44): rapid lasers
+      [h(0.3)], [h(0.7)], [v(0.3)], [v(0.7)],
+      [h(0.4)], [h(0.6)], [v(0.4)], [v(0.6)],
+      [d(1, 0)], [d(-1, 0)], [d(1, 0.4)], [d(-1, -0.4)],
+      [h(0.5)], [v(0.5)], [bomb(0.5, 0.5)], [bnc(0)],
+      // M12 (bars 45-48): cross + bullets
+      [h(0.5), v(0.5), b(0)], null, [h(0.5), v(0.5), b(2)], null,
+      [h(0.3), h(0.7), b(1, 0.5)], null, [v(0.3), v(0.7), b(3, 0.5)], null,
+      [bomb(0.5, 0.5), b(0), b(2)], null, [bomb(0.5, 0.5), b(1), b(3)], null,
+      [h(0.5), v(0.5), bomb(0.5, 0.5), d(1, 0), d(-1, 0)], null, null, [bnc(0)],
+      // M13 (bars 49-52): bouncer chaos
+      [bnc(0), bnc(2)], [bnc(1), bnc(3)], null, [h(0.5), v(0.5)],
+      [bnc(0), bnc(1)], [bnc(2), bnc(3)], null, [bomb(0.5, 0.5)],
+      [bnc(0), h(0.3)], [bnc(2), h(0.7)], [bnc(1), v(0.3)], [bnc(3), v(0.7)],
+      [bnc(0), bnc(1), bnc(2), bnc(3)], null, [d(1, 0), d(-1, 0)], null,
+      // M14 (bars 53-56): homing rain
+      [hom(0)], [hom(1)], [hom(2)], [hom(3)],
+      [hom(0), hom(2)], null, [hom(1), hom(3)], null,
+      [hom(0), bomb(0.5, 0.5)], null, [hom(2), h(0.5)], null,
+      [hom(0), hom(1), hom(2), hom(3), bomb(0.5, 0.5)], null, null, null,
+      // M15 (bars 57-60): all-in
+      [d(1, 0), d(-1, 0), b(0), b(2)], null, [d(1, 0), d(-1, 0), b(1), b(3)], null,
+      [bnc(0), bnc(2), bomb(0.3, 0.3), bomb(0.7, 0.7)], null, [bnc(1), bnc(3), bomb(0.3, 0.7), bomb(0.7, 0.3)], null,
+      [h(0.3), h(0.7), v(0.3), v(0.7), hom(0)], null, [bomb(0.5, 0.5), hom(2)], null,
+      [d(1, 0), d(-1, 0), bnc(0), bnc(2), h(0.5)], null, null, [v(0.5)],
+      // M16 (bars 61-64): pre-finale
+      [bomb(0.3, 0.3), bomb(0.7, 0.7), d(1, 0)], null, [bomb(0.3, 0.7), bomb(0.7, 0.3), d(-1, 0)], null,
+      [b(0), b(1), b(2), b(3), bnc(0)], null, [bomb(0.5, 0.5), bnc(2)], null,
+      [hom(0), hom(2), d(1, 0), d(-1, 0)], null, [hom(1), hom(3), h(0.5)], null,
+      [sw(0), sw(2), bnc(0), bnc(2), bomb(0.5, 0.5)], null, null, [v(0.5)],
+      // M17 (bars 65-68): finale buildup
+      [h(0.3), h(0.7), v(0.3), v(0.7), bomb(0.5, 0.5)], null, null, [bnc(0), bnc(2)],
+      [d(1, 0), d(-1, 0), d(1, 0.4), d(-1, -0.4), h(0.5)], null, null, [bomb(0.5, 0.5)],
+      [bnc(0), bnc(1), bnc(2), bnc(3), v(0.5)], null, null, [h(0.5)],
+      [b(0), b(1), b(2), b(3), bomb(0.5, 0.5), hom(0)], null, null, null,
+      // M18 (bars 69-72): finale climax
+      [bomb(0.5, 0.5), h(0.3), h(0.7), v(0.3), v(0.7), d(1, 0), d(-1, 0)], null, null, null,
+      [bnc(0), bnc(1), bnc(2), bnc(3), bomb(0.3, 0.3), bomb(0.7, 0.7)], null, null, [hom(0), hom(2)],
+      [d(1, 0), d(-1, 0), h(0.5), v(0.5), bomb(0.5, 0.5), bnc(0)], null, null, null,
+      [hom(0), hom(1), hom(2), hom(3), bomb(0.5, 0.5), h(0.5), v(0.5)], null, null, null,
+      // M19 (bars 73-76): final phrases
+      [bnc(0), bnc(2), d(1, 0), d(-1, 0), b(0), b(2)], null, null, [h(0.5)],
+      [bnc(1), bnc(3), bomb(0.3, 0.3), bomb(0.7, 0.7), v(0.5)], null, null, [bomb(0.5, 0.5)],
+      [sw(0), sw(2), hom(0), hom(2), h(0.5)], null, null, [d(1, 0), d(-1, 0)],
+      [b(0), b(1), b(2), b(3), bnc(0), bnc(2)], null, null, [bomb(0.5, 0.5)],
+      // M20 (bars 77-80): coda
+      [d(1, 0), d(-1, 0), bnc(0), bnc(1), bnc(2), bnc(3)], null, null, null,
+      [h(0.3), h(0.5), h(0.7), v(0.3), v(0.5), v(0.7), bomb(0.5, 0.5)], null, null, null,
+      [hom(0), hom(2), bomb(0.3, 0.3), bomb(0.7, 0.7), bomb(0.3, 0.7), bomb(0.7, 0.3)], null, null, null,
+      [bnc(0), bnc(1), bnc(2), bnc(3), d(1, 0), d(-1, 0), h(0.5), v(0.5)], null, null, null,
+      // M21 (bars 81-84): final exhale
+      [h(0.5), v(0.5), bomb(0.5, 0.5)], null, null, null,
+      [bnc(0), bnc(2), d(1, 0), d(-1, 0)], null, null, null,
+      [hom(0), hom(2), bomb(0.5, 0.5), h(0.3), h(0.7)], null, null, null,
+      [bnc(0), bnc(1), bnc(2), bnc(3), bomb(0.5, 0.5), h(0.5), v(0.5), d(1, 0), d(-1, 0)], null, null, null,
+      // M22 (bars 85-88): outro reverb of all themes
+      [d(1, 0), d(-1, 0)], null, [d(1, 0.3), d(-1, -0.3)], null,
+      [b(0), b(2)], null, [b(1), b(3)], null,
+      [hom(0), hom(2)], null, [hom(1), hom(3)], null,
+      [bnc(0), bnc(2), bomb(0.5, 0.5)], null, [bnc(1), bnc(3), h(0.5), v(0.5)], null,
+      // M23 (bars 89-92): true final
+      [h(0.3), h(0.7), v(0.3), v(0.7)], null, [bomb(0.3, 0.3), bomb(0.7, 0.7)], null,
+      [bnc(0), bnc(1), bnc(2), bnc(3)], null, null, [bomb(0.5, 0.5)],
+      [d(1, 0), d(-1, 0), h(0.5), v(0.5), bomb(0.5, 0.5)], null, null, null,
+      [hom(0), hom(1), hom(2), hom(3), bnc(0), bnc(2), bomb(0.5, 0.5)], null, null, null,
+      // M24 (bars 93-106): EXTRA CONTENT to fully cover 3 min @ 140 BPM
+      [h(0.3), v(0.7)], null, [h(0.7), v(0.3)], null,
+      [bomb(0.3, 0.3), d(1, 0)], null, [bomb(0.7, 0.7), d(-1, 0)], null,
+      [bnc(0), b(2, 0.5)], null, [bnc(2), b(0, 0.5)], null,
+      [hom(0), bomb(0.5, 0.5)], null, [hom(2), h(0.5)], null,
+      [d(1, 0.4), d(-1, -0.4), v(0.5)], null, [d(1, -0.4), d(-1, 0.4), h(0.5)], null,
+      [bnc(0), bnc(2), bomb(0.3, 0.3), bomb(0.7, 0.7)], null, null, [h(0.5), v(0.5)],
+      [b(0, 0.3), b(0, 0.7), bnc(2)], null, [b(2, 0.3), b(2, 0.7), bnc(0)], null,
+      [hom(0), hom(2), d(1, 0), d(-1, 0)], null, null, [bomb(0.5, 0.5)],
+      [sw(0), bnc(0), h(0.5)], null, [sw(2), bnc(2), v(0.5)], null,
+      [bnc(0), bnc(1), bnc(2), bnc(3), h(0.5)], null, null, [v(0.5)],
+      [h(0.3), h(0.7), v(0.3), v(0.7), bomb(0.5, 0.5), bnc(0)], null, null, null,
+      [d(1, 0), d(-1, 0), bnc(0), bnc(2), bomb(0.5, 0.5)], null, null, null,
+      [hom(0), hom(1), hom(2), hom(3), b(0), b(2)], null, null, null,
+      [bnc(0), bnc(1), bnc(2), bnc(3), bomb(0.5, 0.5), h(0.3), h(0.7), v(0.3), v(0.7)], null, null, null,
     ],
-    // LEVEL 4 — 48 beats. Spike walls, pillars, dense combos.
+
+    // ============================================================
+    // LEVEL 4 — CYBER PURGE  (132 BPM, ~400 beats / 3:01)
+    // Theme: industrial, restricted spaces. Spike walls and pillars
+    // dominate every section. Bouncers force precise positioning.
+    // ============================================================
     level4: [
-      [T.sp(0, 0.2)], [T.sp(2, 0.5)], [T.pil('h', 0.3)], [T.pil('v', 0.7)],
-      [T.h(0.3), T.h(0.7)], null, [T.v(0.3), T.v(0.7)], null,
-      [T.bomb(0.3, 0.3), T.bomb(0.7, 0.7)], null, [T.hom(0), T.hom(2)], null,
-      [T.sp(1, 0.3), T.sp(3, 0.4)], [T.bnc(0)], [T.h(0.5)], null,
-      [T.d(1, 0)], [T.d(-1, 0)], [T.d(1, 0.4)], [T.d(-1, -0.4)],
-      [T.b(0, 0.3), T.b(0, 0.7)], [T.b(2, 0.3), T.b(2, 0.7)], [T.sw(0)], [T.sw(2)],
-      [T.pil('h', 0.5), T.pil('v', 0.5)], null, [T.bomb(0.5, 0.5)], [T.bnc(2)],
-      [T.sp(0, 0.2), T.sp(2, 0.6)], [T.h(0.5), T.v(0.5)], null, [T.hom(1)],
-      [T.bnc(1), T.bnc(3)], null, [T.h(0.3), T.v(0.3)], [T.h(0.7), T.v(0.7)],
-      [T.d(1, 0), T.d(-1, 0), T.h(0.5)], null, [T.bomb(0.5, 0.5), T.hom(0)], null,
-      [T.pil('h', 0.4), T.pil('v', 0.6)], [T.b(0), T.b(2)], [T.sw(1), T.sw(3)], null,
-      [T.bnc(0), T.bnc(2), T.h(0.5)], null, [T.bomb(0.3, 0.3), T.bomb(0.7, 0.7), T.v(0.5)], null,
+      // M1 (bars 1-4): spike wall introduction
+      [sp(0, 0.2)], null, [sp(2, 0.5)], null,
+      [sp(1, 0.3)], null, [sp(3, 0.4)], null,
+      [sp(0, 0.5), sp(2, 0.2)], null, [sp(1, 0.3), sp(3, 0.5)], null,
+      [sp(0, 0.2), sp(1, 0.3), sp(2, 0.5)], null, null, [h(0.5)],
+      // M2 (bars 5-8): pillars
+      [pil('h', 0.3)], null, [pil('h', 0.7)], null,
+      [pil('v', 0.3)], null, [pil('v', 0.7)], null,
+      [pil('h', 0.5), pil('v', 0.5)], null, [pil('h', 0.3), pil('v', 0.7)], null,
+      [pil('h', 0.4), pil('v', 0.6)], null, [pil('h', 0.6), pil('v', 0.4)], null,
+      // M3 (bars 9-12): spike + lasers
+      [sp(0, 0.2), v(0.5)], null, [sp(2, 0.6), h(0.5)], null,
+      [sp(1, 0.3), h(0.5)], null, [sp(3, 0.4), v(0.5)], null,
+      [sp(0, 0.4), sp(2, 0.4), v(0.5)], null, [h(0.3), h(0.7)], null,
+      [sp(1, 0.3), sp(3, 0.5), bomb(0.5, 0.5)], null, null, [d(1, 0), d(-1, 0)],
+      // M4 (bars 13-16): pillars + bombs
+      [pil('h', 0.3), bomb(0.5, 0.5)], null, [pil('v', 0.7), bomb(0.5, 0.5)], null,
+      [pil('h', 0.5), bomb(0.3, 0.3), bomb(0.7, 0.7)], null, [pil('v', 0.5), bomb(0.3, 0.7), bomb(0.7, 0.3)], null,
+      [pil('h', 0.3), pil('h', 0.7)], null, [pil('v', 0.3), pil('v', 0.7)], null,
+      [pil('h', 0.5), pil('v', 0.5), bomb(0.3, 0.3), bomb(0.7, 0.7)], null, null, [h(0.5)],
+      // M5 (bars 17-20): 4-side spike walls
+      [sp(0, 0.2)], [sp(1, 0.3)], [sp(2, 0.5)], [sp(3, 0.4)],
+      [sp(0, 0.5)], [sp(1, 0.5)], [sp(2, 0.2)], [sp(3, 0.2)],
+      [sp(0, 0.2), sp(2, 0.5)], null, [sp(1, 0.3), sp(3, 0.4)], null,
+      [sp(0, 0.4), sp(1, 0.4), sp(2, 0.4), sp(3, 0.4)], null, null, [bomb(0.5, 0.5)],
+      // M6 (bars 21-24): bouncer through pillars
+      [pil('h', 0.3), bnc(0)], null, [pil('h', 0.7), bnc(2)], null,
+      [pil('v', 0.3), bnc(1)], null, [pil('v', 0.7), bnc(3)], null,
+      [pil('h', 0.5), bnc(0), bnc(2)], null, [pil('v', 0.5), bnc(1), bnc(3)], null,
+      [pil('h', 0.3), pil('v', 0.7), bnc(0)], null, [pil('h', 0.7), pil('v', 0.3), bnc(2)], null,
+      // M7 (bars 25-28): dense restrictions
+      [sp(0, 0.2), pil('h', 0.5)], null, [sp(2, 0.5), pil('v', 0.5)], null,
+      [sp(1, 0.3), pil('h', 0.3)], null, [sp(3, 0.4), pil('v', 0.7)], null,
+      [sp(0, 0.4), sp(2, 0.4), pil('h', 0.5)], null, [sp(1, 0.4), sp(3, 0.4), pil('v', 0.5)], null,
+      [sp(0, 0.2), pil('h', 0.5), bnc(0)], null, [sp(2, 0.6), pil('v', 0.5), bnc(2)], null,
+      // M8 (bars 29-32): bullets through gaps
+      [pil('v', 0.5), b(0, 0.3)], null, [pil('v', 0.5), b(0, 0.7)], null,
+      [pil('h', 0.5), b(1, 0.3)], null, [pil('h', 0.5), b(3, 0.3)], null,
+      [sp(0, 0.4), b(2, 0.5)], null, [sp(2, 0.4), b(0, 0.5)], null,
+      [pil('h', 0.5), pil('v', 0.5), b(0), b(2)], null, null, [bomb(0.5, 0.5)],
+      // M9 (bars 33-36): cross spike walls
+      [sp(0, 0.2), sp(2, 0.6)], null, [sp(1, 0.3), sp(3, 0.4)], null,
+      [sp(0, 0.4), sp(2, 0.4), v(0.5)], null, [sp(1, 0.4), sp(3, 0.4), h(0.5)], null,
+      [sp(0, 0.2), sp(2, 0.5), pil('v', 0.5)], null, [sp(1, 0.3), sp(3, 0.5), pil('h', 0.5)], null,
+      [sp(0, 0.3), sp(1, 0.3), sp(2, 0.3), sp(3, 0.3)], null, null, [h(0.5), v(0.5)],
+      // M10 (bars 37-40): pillar maze
+      [pil('h', 0.3), pil('v', 0.3)], null, [pil('h', 0.7), pil('v', 0.7)], null,
+      [pil('h', 0.5), pil('v', 0.3), pil('v', 0.7)], null, [pil('v', 0.5), pil('h', 0.3), pil('h', 0.7)], null,
+      [pil('h', 0.3), pil('h', 0.7), pil('v', 0.5)], null, [pil('v', 0.3), pil('v', 0.7), pil('h', 0.5)], null,
+      [pil('h', 0.3), pil('h', 0.7), pil('v', 0.3), pil('v', 0.7)], null, null, [bnc(0)],
+      // M11 (bars 41-44): mid-section bombs + diag
+      [bomb(0.3, 0.3), pil('h', 0.5)], null, [bomb(0.7, 0.7), pil('v', 0.5)], null,
+      [bomb(0.3, 0.7), d(1, 0)], null, [bomb(0.7, 0.3), d(-1, 0)], null,
+      [bomb(0.3, 0.3), bomb(0.7, 0.7), sp(0, 0.4)], null, [bomb(0.3, 0.7), bomb(0.7, 0.3), sp(2, 0.4)], null,
+      [bomb(0.5, 0.5), pil('h', 0.5), pil('v', 0.5)], null, null, [d(1, 0), d(-1, 0)],
+      // M12 (bars 45-48): bouncer storms
+      [bnc(0), pil('h', 0.5)], null, [bnc(2), pil('v', 0.5)], null,
+      [bnc(1), pil('h', 0.3)], null, [bnc(3), pil('v', 0.7)], null,
+      [bnc(0), bnc(2), sp(0, 0.4)], null, [bnc(1), bnc(3), sp(2, 0.4)], null,
+      [bnc(0), bnc(1), bnc(2), bnc(3)], null, null, [bomb(0.5, 0.5)],
+      // M13 (bars 49-52): 3-trap combos
+      [sp(0, 0.2), pil('h', 0.5), bnc(0)], null, [sp(2, 0.6), pil('v', 0.5), bnc(2)], null,
+      [bomb(0.3, 0.3), pil('h', 0.5), bnc(1)], null, [bomb(0.7, 0.7), pil('v', 0.5), bnc(3)], null,
+      [sp(0, 0.4), sp(2, 0.4), bnc(0)], null, [sp(1, 0.4), sp(3, 0.4), bnc(2)], null,
+      [sp(0, 0.3), pil('h', 0.5), pil('v', 0.5), bnc(0), bnc(2)], null, null, [h(0.5)],
+      // M14 (bars 53-56): bullets through narrow gaps
+      [pil('h', 0.5), b(0, 0.3), b(0, 0.7)], null, [pil('h', 0.5), b(2, 0.3), b(2, 0.7)], null,
+      [pil('v', 0.5), b(1, 0.3), b(1, 0.7)], null, [pil('v', 0.5), b(3, 0.3), b(3, 0.7)], null,
+      [sp(0, 0.4), b(2)], [sp(2, 0.4), b(0)], [sp(1, 0.4), b(3)], [sp(3, 0.4), b(1)],
+      [pil('h', 0.5), pil('v', 0.5), b(0), b(1), b(2), b(3)], null, null, [bomb(0.5, 0.5)],
+      // M15 (bars 57-60): swarms + pillars
+      [sw(0), pil('h', 0.5)], null, [sw(2), pil('h', 0.5)], null,
+      [sw(1), pil('v', 0.5)], null, [sw(3), pil('v', 0.5)], null,
+      [sw(0), sw(2), sp(0, 0.4)], null, [sw(1), sw(3), sp(2, 0.4)], null,
+      [sw(0), sw(2), pil('h', 0.5), pil('v', 0.5)], null, null, [bomb(0.5, 0.5)],
+      // M16 (bars 61-64): cross spike + pillar
+      [sp(0, 0.2), sp(2, 0.6), pil('h', 0.5)], null, [sp(1, 0.3), sp(3, 0.4), pil('v', 0.5)], null,
+      [sp(0, 0.4), pil('v', 0.5), bnc(0)], null, [sp(2, 0.4), pil('h', 0.5), bnc(2)], null,
+      [sp(0, 0.3), sp(1, 0.3), sp(2, 0.3), sp(3, 0.3), bnc(0), bnc(2)], null, null, [v(0.5)],
+      [sp(0, 0.2), sp(2, 0.5), pil('h', 0.3), pil('v', 0.7), bomb(0.5, 0.5)], null, null, null,
+      // M17 (bars 65-68): pre-finale buildup
+      [pil('h', 0.3), pil('h', 0.7), pil('v', 0.3), pil('v', 0.7)], null, [bomb(0.5, 0.5)], null,
+      [sp(0, 0.2), sp(2, 0.6), bnc(0), bnc(2)], null, [sp(1, 0.3), sp(3, 0.4), bnc(1), bnc(3)], null,
+      [pil('h', 0.5), pil('v', 0.5), bomb(0.3, 0.3), bomb(0.7, 0.7)], null, null, [h(0.5), v(0.5)],
+      [sp(0, 0.3), pil('h', 0.5), bnc(0), bnc(2), bomb(0.5, 0.5)], null, null, null,
+      // M18 (bars 69-72): finale climax
+      [sp(0, 0.2), sp(1, 0.3), sp(2, 0.5), sp(3, 0.4), bomb(0.5, 0.5)], null, null, [bnc(0)],
+      [pil('h', 0.3), pil('h', 0.7), pil('v', 0.3), pil('v', 0.7), bnc(0), bnc(2)], null, null, [bomb(0.5, 0.5)],
+      [sp(0, 0.4), pil('h', 0.5), pil('v', 0.5), bnc(0), bnc(1), bnc(2), bnc(3)], null, null, null,
+      [sp(0, 0.2), sp(2, 0.6), pil('h', 0.3), pil('v', 0.7), bomb(0.5, 0.5), h(0.5), v(0.5)], null, null, null,
+      // M19 (bars 73-76): outro phrases
+      [pil('h', 0.4), bnc(1), b(0)], null, [pil('v', 0.6), bnc(3), b(2)], null,
+      [sp(0, 0.4), bomb(0.5, 0.5), bnc(0)], null, [sp(2, 0.4), bomb(0.5, 0.5), bnc(2)], null,
+      [pil('h', 0.5), pil('v', 0.5), d(1, 0), d(-1, 0)], null, null, [h(0.3), h(0.7)],
+      [bnc(0), bnc(1), bnc(2), bnc(3), pil('h', 0.5), pil('v', 0.5)], null, null, [bomb(0.5, 0.5)],
+      // M20 (bars 77-80): final volley
+      [sp(0, 0.2), sp(2, 0.5), pil('h', 0.5), pil('v', 0.5), bomb(0.3, 0.3), bomb(0.7, 0.7)], null, null, null,
+      [sp(1, 0.3), sp(3, 0.4), pil('h', 0.3), pil('v', 0.7), bomb(0.3, 0.7), bomb(0.7, 0.3)], null, null, null,
+      [sp(0, 0.3), sp(1, 0.3), sp(2, 0.3), sp(3, 0.3), bnc(0), bnc(1), bnc(2), bnc(3)], null, null, null,
+      [pil('h', 0.5), pil('v', 0.5), bomb(0.5, 0.5), h(0.5), v(0.5), d(1, 0), d(-1, 0)], null, null, null,
+      // M21 (bars 81-84): final spike
+      [sp(0, 0.2), pil('h', 0.5), bnc(0), bomb(0.3, 0.3)], null, [sp(2, 0.6), pil('v', 0.5), bnc(2), bomb(0.7, 0.7)], null,
+      [sp(1, 0.3), pil('v', 0.3), bnc(1)], null, [sp(3, 0.4), pil('h', 0.7), bnc(3)], null,
+      [pil('h', 0.5), pil('v', 0.5), bnc(0), bnc(2), bomb(0.5, 0.5)], null, null, null,
+      [sp(0, 0.4), sp(2, 0.4), pil('h', 0.5), pil('v', 0.5), bnc(0), bnc(1), bnc(2), bnc(3)], null, null, null,
+      // M22 (bars 85-88): final ending
+      [pil('h', 0.5), bnc(0)], [pil('v', 0.5), bnc(2)], null, [bomb(0.5, 0.5)],
+      [sp(0, 0.3), sp(2, 0.5), pil('h', 0.4), pil('v', 0.6)], null, null, [bnc(1), bnc(3)],
+      [pil('h', 0.5), pil('v', 0.5), sp(0, 0.4), sp(2, 0.4), bnc(0), bnc(2)], null, null, [bomb(0.5, 0.5)],
+      [pil('h', 0.3), pil('h', 0.7), pil('v', 0.3), pil('v', 0.7), bnc(0), bnc(1), bnc(2), bnc(3), bomb(0.5, 0.5)], null, null, null,
+      // M23 (bars 89-100): EXTRA fill to ~3 min @ 132 BPM
+      [sp(0, 0.4), pil('h', 0.5)], null, [sp(2, 0.4), pil('v', 0.5)], null,
+      [pil('h', 0.3), pil('v', 0.7)], null, [pil('h', 0.7), pil('v', 0.3)], null,
+      [bomb(0.3, 0.3), bomb(0.7, 0.7), pil('h', 0.5)], null, [bomb(0.3, 0.7), bomb(0.7, 0.3), pil('v', 0.5)], null,
+      [bnc(0), bnc(2), sp(0, 0.3)], null, [bnc(1), bnc(3), sp(2, 0.5)], null,
+      [sp(0, 0.2), sp(1, 0.3), pil('h', 0.5), bnc(0)], null, [sp(2, 0.5), sp(3, 0.4), pil('v', 0.5), bnc(2)], null,
+      [pil('h', 0.5), pil('v', 0.5), bnc(0), bnc(2), h(0.5)], null, [bnc(1), bnc(3), v(0.5)], null,
+      [sp(0, 0.3), sp(1, 0.3), sp(2, 0.3), sp(3, 0.3), pil('h', 0.5), pil('v', 0.5)], null, null, [bomb(0.5, 0.5)],
+      [pil('h', 0.3), pil('h', 0.7), pil('v', 0.3), pil('v', 0.7), bnc(0), bnc(2)], null, null, [bomb(0.3, 0.3), bomb(0.7, 0.7)],
+      [sp(0, 0.4), sp(2, 0.4), pil('h', 0.5), pil('v', 0.5), bomb(0.5, 0.5), bnc(0), bnc(1), bnc(2), bnc(3)], null, null, null,
+      [pil('h', 0.5), pil('v', 0.5), bnc(0), bnc(1), bnc(2), bnc(3), h(0.3), h(0.7), v(0.3), v(0.7)], null, null, null,
+      [sp(0, 0.2), sp(1, 0.3), sp(2, 0.5), sp(3, 0.4), bomb(0.5, 0.5), bnc(0), bnc(2), h(0.5), v(0.5)], null, null, null,
+      [pil('h', 0.3), pil('v', 0.3), pil('h', 0.7), pil('v', 0.7), sp(0, 0.4), sp(2, 0.4), bnc(0), bnc(2), bomb(0.5, 0.5)], null, null, null,
     ],
-    // LEVEL 5 — 64 beats. Wall-to-wall hazards, multiple bouncers, every trap type.
+
+    // ============================================================
+    // LEVEL 5 — OVERLOAD  (165 BPM, ~496 beats / 3:00)
+    // Theme: maximum density, every trap type, technical patterns.
+    // Heavy use of rotating lasers, rings, and stacked bouncers.
+    // ============================================================
     level5: [
-      [T.h(0.3), T.v(0.3)], [T.h(0.7), T.v(0.7)], [T.d(1, 0)], [T.d(-1, 0)],
-      [T.sp(0, 0.2), T.sp(2, 0.6)], [T.pil('h', 0.5)], [T.pil('v', 0.5)], [T.bnc(0)],
-      [T.bomb(0.3, 0.3), T.bomb(0.7, 0.7)], [T.bomb(0.3, 0.7), T.bomb(0.7, 0.3)], [T.ring(0.5, 0.5)], null,
-      [T.b(0), T.b(1)], [T.b(2), T.b(3)], [T.hom(0), T.hom(2)], [T.bnc(1), T.bnc(3)],
-      [T.rot(0.5, 0.5)], null, [T.h(0.5), T.v(0.5)], [T.d(1, 0), T.d(-1, 0)],
-      [T.sw(0), T.sw(2)], [T.bnc(0), T.bnc(2)], [T.bomb(0.5, 0.5)], [T.hom(1), T.hom(3)],
-      [T.sp(0, 0.2), T.v(0.5)], [T.sp(2, 0.5), T.h(0.5)], [T.pil('h', 0.3)], [T.pil('v', 0.7)],
-      [T.d(1, 0), T.d(-1, 0), T.v(0.5)], [T.hom(0), T.hom(2)], [T.b(0), T.b(2)], [T.bomb(0.5, 0.5), T.ring(0.5, 0.5)],
-      [T.h(0.3), T.h(0.7), T.v(0.3), T.v(0.7)], null, [T.bnc(0), T.bnc(1), T.bnc(2)], null,
-      [T.rot(0.3, 0.3)], [T.rot(0.7, 0.7)], [T.h(0.5), T.v(0.5)], [T.bomb(0.5, 0.5)],
-      [T.sp(0, 0.2), T.sp(1, 0.3), T.sp(2, 0.5)], null, [T.b(0), T.b(1), T.b(2), T.b(3)], [T.hom(0)],
-      [T.bnc(0), T.bnc(2), T.h(0.5), T.v(0.5)], null, [T.bomb(0.3, 0.5), T.bomb(0.7, 0.5)], [T.hom(0)],
-      [T.pil('h', 0.4), T.pil('v', 0.6), T.bnc(1)], [T.h(0.3), T.h(0.7)], [T.v(0.3), T.v(0.7)], null,
-      [T.d(1, 0), T.d(-1, 0), T.bomb(0.5, 0.5)], null, [T.bnc(0), T.bnc(1), T.bnc(2), T.bnc(3)], null,
-      [T.ring(0.5, 0.5), T.bomb(0.5, 0.5)], [T.h(0.5), T.v(0.5)], [T.d(1, 0), T.d(-1, 0)], [T.hom(0), T.hom(2)],
-      [T.sp(0, 0.1), T.sp(2, 0.7), T.pil('h', 0.5), T.pil('v', 0.5)], null, [T.bomb(0.3, 0.3), T.bomb(0.7, 0.7), T.bnc(0), T.bnc(2)], null,
+      // M1 (bars 1-4): explosive opener
+      [h(0.3), v(0.3)], [h(0.7), v(0.7)], [d(1, 0)], [d(-1, 0)],
+      [bomb(0.3, 0.3), bomb(0.7, 0.7)], null, [bomb(0.3, 0.7), bomb(0.7, 0.3)], null,
+      [ring(0.5, 0.5)], null, [bnc(0), bnc(2)], null,
+      [rot(0.5, 0.5)], null, [h(0.5), v(0.5)], [bomb(0.5, 0.5)],
+      // M2 (bars 5-8): every-side bullets + lasers
+      [b(0), h(0.3)], [b(1), v(0.3)], [b(2), h(0.7)], [b(3), v(0.7)],
+      [hom(0), hom(2)], [hom(1), hom(3)], null, [bomb(0.5, 0.5)],
+      [b(0, 0.3), b(0, 0.7), b(2, 0.3), b(2, 0.7)], null, [b(1, 0.3), b(1, 0.7), b(3, 0.3), b(3, 0.7)], null,
+      [sw(0), sw(2)], null, [sw(1), sw(3)], null,
+      // M3 (bars 9-12): spike walls
+      [sp(0, 0.2), sp(2, 0.6)], null, [sp(1, 0.3), sp(3, 0.4)], null,
+      [sp(0, 0.4), pil('h', 0.5)], null, [sp(2, 0.4), pil('v', 0.5)], null,
+      [sp(0, 0.3), sp(1, 0.3), sp(2, 0.3), sp(3, 0.3)], null, null, [bomb(0.5, 0.5)],
+      [pil('h', 0.3), pil('h', 0.7), pil('v', 0.3), pil('v', 0.7)], null, null, [bnc(0), bnc(2)],
+      // M4 (bars 13-16): rotating lasers
+      [rot(0.3, 0.3)], null, [rot(0.7, 0.7)], null,
+      [rot(0.3, 0.7)], null, [rot(0.7, 0.3)], null,
+      [rot(0.5, 0.5), bnc(0)], null, [rot(0.5, 0.5), bnc(2)], null,
+      [rot(0.3, 0.5), rot(0.7, 0.5)], null, null, [bomb(0.5, 0.5)],
+      // M5 (bars 17-20): rings
+      [ring(0.5, 0.5)], null, [ring(0.3, 0.5)], null,
+      [ring(0.7, 0.5)], null, [ring(0.5, 0.5), bnc(0)], null,
+      [ring(0.3, 0.3), ring(0.7, 0.7)], null, [ring(0.3, 0.7), ring(0.7, 0.3)], null,
+      [ring(0.5, 0.5), bomb(0.5, 0.5)], null, null, [h(0.5), v(0.5)],
+      // M6 (bars 21-24): triple combos
+      [h(0.3), h(0.7), v(0.5)], null, [v(0.3), v(0.7), h(0.5)], null,
+      [bomb(0.5, 0.5), d(1, 0), d(-1, 0)], null, [hom(0), hom(2), bomb(0.5, 0.5)], null,
+      [bnc(0), bnc(2), bomb(0.5, 0.5)], null, [bnc(1), bnc(3), h(0.5)], null,
+      [d(1, 0), d(-1, 0), bomb(0.3, 0.3), bomb(0.7, 0.7), h(0.5)], null, null, [v(0.5)],
+      // M7 (bars 25-28): rapid fire
+      [h(0.3)], [h(0.5)], [h(0.7)], [v(0.5)],
+      [v(0.3)], [v(0.5)], [v(0.7)], [h(0.5)],
+      [d(1, 0)], [d(-1, 0)], [d(1, 0.3)], [d(-1, -0.3)],
+      [bnc(0)], [bnc(1)], [bnc(2)], [bnc(3)],
+      // M8 (bars 29-32): all-trap mix
+      [h(0.3), v(0.3), bomb(0.5, 0.5)], null, [h(0.7), v(0.7), bnc(0)], null,
+      [d(1, 0), b(0), bomb(0.3, 0.3)], null, [d(-1, 0), b(2), bomb(0.7, 0.7)], null,
+      [hom(0), sw(2), h(0.5)], null, [hom(2), sw(0), v(0.5)], null,
+      [sp(0, 0.4), pil('h', 0.5), bnc(0), bnc(2)], null, null, [bomb(0.5, 0.5)],
+      // M9 (bars 33-36): bouncer storm
+      [bnc(0), bnc(2)], [bnc(1), bnc(3)], [bnc(0), bnc(1)], [bnc(2), bnc(3)],
+      [bnc(0), h(0.3)], [bnc(2), h(0.7)], [bnc(1), v(0.3)], [bnc(3), v(0.7)],
+      [bnc(0), bnc(1), bnc(2), bnc(3)], null, null, [bomb(0.5, 0.5)],
+      [bnc(0), bnc(1), bnc(2), bnc(3), h(0.5), v(0.5)], null, null, [d(1, 0), d(-1, 0)],
+      // M10 (bars 37-40): rotating + rings layered
+      [rot(0.5, 0.5), ring(0.5, 0.5)], null, [rot(0.3, 0.3), ring(0.7, 0.7)], null,
+      [rot(0.7, 0.7), ring(0.3, 0.3)], null, [rot(0.3, 0.7), ring(0.7, 0.3)], null,
+      [rot(0.5, 0.5), ring(0.5, 0.5), bnc(0)], null, [rot(0.5, 0.5), ring(0.5, 0.5), bnc(2)], null,
+      [rot(0.3, 0.5), rot(0.7, 0.5), bomb(0.5, 0.5)], null, null, [h(0.5), v(0.5)],
+      // M11 (bars 41-44): pre-finale chaos
+      [h(0.3), h(0.7), v(0.3), v(0.7), bomb(0.5, 0.5)], null, null, [bnc(0), bnc(2)],
+      [d(1, 0), d(-1, 0), d(1, 0.4), d(-1, -0.4), h(0.5)], null, null, [bomb(0.5, 0.5)],
+      [b(0), b(1), b(2), b(3), bnc(1), bnc(3)], null, null, [hom(0), hom(2)],
+      [sp(0, 0.4), sp(2, 0.4), pil('h', 0.5), pil('v', 0.5), bomb(0.5, 0.5)], null, null, null,
+      // M12 (bars 45-48): finale climax
+      [bomb(0.5, 0.5), h(0.3), h(0.7), v(0.3), v(0.7), d(1, 0), d(-1, 0)], null, null, null,
+      [bnc(0), bnc(1), bnc(2), bnc(3), bomb(0.3, 0.3), bomb(0.7, 0.7), bomb(0.3, 0.7), bomb(0.7, 0.3)], null, null, null,
+      [rot(0.5, 0.5), ring(0.5, 0.5), h(0.5), v(0.5), bomb(0.5, 0.5)], null, null, null,
+      [hom(0), hom(1), hom(2), hom(3), bnc(0), bnc(1), bnc(2), bnc(3)], null, null, null,
+      // M13 (bars 49-52): second wave
+      [sp(0, 0.2), sp(2, 0.6), pil('h', 0.5), bnc(0)], null, [sp(1, 0.3), sp(3, 0.4), pil('v', 0.5), bnc(2)], null,
+      [bomb(0.3, 0.3), bomb(0.7, 0.7), rot(0.5, 0.5)], null, [bomb(0.3, 0.7), bomb(0.7, 0.3), ring(0.5, 0.5)], null,
+      [b(0), b(2), hom(1), hom(3)], null, [b(1), b(3), hom(0), hom(2)], null,
+      [d(1, 0), d(-1, 0), bnc(0), bnc(2), h(0.5)], null, null, [v(0.5), bomb(0.5, 0.5)],
+      // M14 (bars 53-56): shifting attacks
+      [h(0.3), v(0.7)], [h(0.7), v(0.3)], [bomb(0.3, 0.3), bomb(0.7, 0.7)], [bomb(0.3, 0.7), bomb(0.7, 0.3)],
+      [bnc(0), d(1, 0)], [bnc(2), d(-1, 0)], [bnc(1), d(1, 0.3)], [bnc(3), d(-1, -0.3)],
+      [hom(0), b(2)], [hom(2), b(0)], [hom(1), b(3)], [hom(3), b(1)],
+      [rot(0.3, 0.5), rot(0.7, 0.5), ring(0.5, 0.5)], null, null, [bomb(0.5, 0.5)],
+      // M15 (bars 57-60): triple-stack
+      [h(0.3), h(0.7), v(0.3)], [h(0.5), v(0.7), bomb(0.5, 0.5)], null, [bnc(0), bnc(2)],
+      [v(0.3), v(0.7), h(0.5)], [v(0.5), h(0.3), bomb(0.5, 0.5)], null, [bnc(1), bnc(3)],
+      [d(1, 0), d(-1, 0), bomb(0.3, 0.3)], [d(1, 0.4), d(-1, -0.4), bomb(0.7, 0.7)], null, [h(0.5), v(0.5)],
+      [b(0), b(2), bomb(0.3, 0.7)], [b(1), b(3), bomb(0.7, 0.3)], null, [hom(0), hom(2)],
+      // M16 (bars 61-64): boss stage 1
+      [rot(0.5, 0.5), bnc(0), bnc(2)], null, [rot(0.3, 0.3), rot(0.7, 0.7), bnc(1), bnc(3)], null,
+      [ring(0.5, 0.5), h(0.5), v(0.5)], null, [ring(0.3, 0.3), ring(0.7, 0.7), bomb(0.5, 0.5)], null,
+      [sp(0, 0.4), sp(2, 0.4), bnc(0), bnc(2), bomb(0.5, 0.5)], null, null, [hom(0), hom(2)],
+      [pil('h', 0.5), pil('v', 0.5), rot(0.5, 0.5), bnc(0), bnc(1), bnc(2), bnc(3)], null, null, null,
+      // M17 (bars 65-68): bullet hell
+      [b(0, 0.2), b(0, 0.4), b(0, 0.6), b(0, 0.8)], null, [b(2, 0.2), b(2, 0.4), b(2, 0.6), b(2, 0.8)], null,
+      [b(1, 0.2), b(1, 0.4), b(1, 0.6), b(1, 0.8)], null, [b(3, 0.2), b(3, 0.4), b(3, 0.6), b(3, 0.8)], null,
+      [sw(0), sw(1), sw(2), sw(3)], null, null, [bomb(0.5, 0.5)],
+      [b(0), b(1), b(2), b(3), hom(0), hom(1), hom(2), hom(3)], null, null, null,
+      // M18 (bars 69-72): mid-finale buildup
+      [h(0.3), h(0.5), h(0.7), v(0.3), v(0.5), v(0.7)], null, null, [bnc(0), bnc(2)],
+      [bomb(0.3, 0.3), bomb(0.5, 0.5), bomb(0.7, 0.7), bomb(0.3, 0.7), bomb(0.7, 0.3)], null, null, [d(1, 0), d(-1, 0)],
+      [rot(0.3, 0.3), rot(0.7, 0.7), ring(0.5, 0.5), bomb(0.5, 0.5)], null, null, [bnc(0), bnc(1), bnc(2), bnc(3)],
+      [sp(0, 0.2), sp(2, 0.5), pil('h', 0.3), pil('v', 0.7), bomb(0.5, 0.5), bnc(0)], null, null, null,
+      // M19 (bars 73-76): boss stage 2
+      [rot(0.5, 0.5), ring(0.5, 0.5), bnc(0), bnc(2)], null, null, [bomb(0.5, 0.5)],
+      [rot(0.3, 0.3), rot(0.7, 0.7), bnc(1), bnc(3), h(0.5)], null, null, [v(0.5)],
+      [rot(0.3, 0.7), rot(0.7, 0.3), ring(0.5, 0.5)], null, null, [bomb(0.3, 0.3), bomb(0.7, 0.7)],
+      [rot(0.5, 0.5), ring(0.3, 0.3), ring(0.7, 0.7), bnc(0), bnc(2), bomb(0.5, 0.5)], null, null, null,
+      // M20 (bars 77-80): bullet pillar maze
+      [pil('h', 0.5), b(0, 0.2), b(0, 0.8)], null, [pil('h', 0.5), b(2, 0.2), b(2, 0.8)], null,
+      [pil('v', 0.5), b(1, 0.2), b(1, 0.8)], null, [pil('v', 0.5), b(3, 0.2), b(3, 0.8)], null,
+      [pil('h', 0.3), pil('h', 0.7), b(0), b(2)], null, [pil('v', 0.3), pil('v', 0.7), b(1), b(3)], null,
+      [pil('h', 0.5), pil('v', 0.5), b(0), b(1), b(2), b(3), hom(0), hom(2)], null, null, null,
+      // M21 (bars 81-84): swarm storm
+      [sw(0), sw(1)], [sw(2), sw(3)], [sw(0), sw(2)], [sw(1), sw(3)],
+      [sw(0), bnc(0), h(0.5)], [sw(2), bnc(2), v(0.5)], null, [bomb(0.5, 0.5)],
+      [sw(0), sw(1), sw(2), sw(3)], null, null, [d(1, 0), d(-1, 0)],
+      [sw(0), sw(2), bnc(0), bnc(2), bomb(0.5, 0.5), h(0.5)], null, null, [v(0.5)],
+      // M22 (bars 85-88): rotating tornado
+      [rot(0.3, 0.3)], [rot(0.7, 0.3)], [rot(0.7, 0.7)], [rot(0.3, 0.7)],
+      [rot(0.5, 0.5)], null, [rot(0.3, 0.5), rot(0.7, 0.5)], null,
+      [rot(0.5, 0.3), rot(0.5, 0.7)], null, [rot(0.3, 0.5), rot(0.7, 0.5)], null,
+      [rot(0.3, 0.3), rot(0.3, 0.7), rot(0.7, 0.3), rot(0.7, 0.7)], null, null, [bomb(0.5, 0.5)],
+      // M23 (bars 89-92): final buildup
+      [h(0.3), h(0.7), v(0.3), v(0.7), bomb(0.5, 0.5), bnc(0)], null, null, [bnc(2)],
+      [d(1, 0), d(-1, 0), d(1, 0.4), d(-1, -0.4), bomb(0.5, 0.5)], null, null, [hom(0), hom(2)],
+      [sp(0, 0.2), sp(2, 0.6), pil('h', 0.5), pil('v', 0.5), bomb(0.5, 0.5), bnc(0), bnc(2)], null, null, null,
+      [rot(0.5, 0.5), ring(0.5, 0.5), bomb(0.3, 0.3), bomb(0.7, 0.7), bnc(0), bnc(1), bnc(2), bnc(3)], null, null, null,
+      // M24 (bars 93-96): mega finale
+      [h(0.3), h(0.5), h(0.7), v(0.3), v(0.5), v(0.7), bomb(0.5, 0.5)], null, null, null,
+      [d(1, 0), d(-1, 0), d(1, 0.4), d(-1, -0.4), h(0.5), v(0.5), bomb(0.5, 0.5)], null, null, null,
+      [bnc(0), bnc(1), bnc(2), bnc(3), bomb(0.3, 0.3), bomb(0.7, 0.7), bomb(0.3, 0.7), bomb(0.7, 0.3)], null, null, null,
+      [rot(0.3, 0.3), rot(0.7, 0.7), ring(0.5, 0.5), bnc(0), bnc(2), bomb(0.5, 0.5), h(0.5), v(0.5)], null, null, null,
+      // M25 (bars 97-100): nuclear endgame
+      [sp(0, 0.2), sp(1, 0.3), sp(2, 0.5), sp(3, 0.4), pil('h', 0.5), pil('v', 0.5)], null, null, [bomb(0.5, 0.5)],
+      [bnc(0), bnc(1), bnc(2), bnc(3), rot(0.5, 0.5), ring(0.5, 0.5)], null, null, [d(1, 0), d(-1, 0)],
+      [b(0), b(1), b(2), b(3), hom(0), hom(1), hom(2), hom(3), bomb(0.5, 0.5)], null, null, null,
+      [h(0.3), h(0.7), v(0.3), v(0.7), bnc(0), bnc(2), bomb(0.5, 0.5), rot(0.5, 0.5), ring(0.5, 0.5)], null, null, null,
+      // M26 (bars 101-104): coda
+      [bomb(0.5, 0.5), bnc(0), h(0.5)], null, [bomb(0.5, 0.5), bnc(2), v(0.5)], null,
+      [d(1, 0), d(-1, 0), bnc(1), bnc(3)], null, [h(0.3), h(0.7), v(0.3), v(0.7)], null,
+      [rot(0.3, 0.3), rot(0.7, 0.7), bomb(0.5, 0.5)], null, [ring(0.5, 0.5), bnc(0), bnc(2)], null,
+      [sp(0, 0.4), sp(2, 0.4), pil('h', 0.5), pil('v', 0.5), rot(0.5, 0.5), bnc(0), bnc(1), bnc(2), bnc(3)], null, null, null,
+      // M27 (bars 105-108): final hurrah
+      [bomb(0.3, 0.3), bomb(0.7, 0.3), bomb(0.3, 0.7), bomb(0.7, 0.7), h(0.5), v(0.5)], null, null, [bnc(0), bnc(2)],
+      [b(0, 0.3), b(0, 0.7), b(2, 0.3), b(2, 0.7), b(1, 0.5), b(3, 0.5), bomb(0.5, 0.5)], null, null, null,
+      [hom(0), hom(1), hom(2), hom(3), d(1, 0), d(-1, 0), d(1, 0.4), d(-1, -0.4)], null, null, [bomb(0.5, 0.5)],
+      [rot(0.5, 0.5), ring(0.5, 0.5), bnc(0), bnc(1), bnc(2), bnc(3), bomb(0.3, 0.3), bomb(0.7, 0.7), h(0.5), v(0.5)], null, null, null,
+      // M28 (bars 109-112): true ending
+      [pil('h', 0.5), pil('v', 0.5), sp(0, 0.4), sp(2, 0.4), bomb(0.5, 0.5), bnc(0), bnc(2)], null, null, null,
+      [rot(0.3, 0.3), rot(0.7, 0.7), ring(0.3, 0.3), ring(0.7, 0.7), bnc(0), bnc(2), bomb(0.5, 0.5)], null, null, null,
+      [h(0.3), h(0.5), h(0.7), v(0.3), v(0.5), v(0.7), d(1, 0), d(-1, 0), bomb(0.5, 0.5)], null, null, null,
+      [bnc(0), bnc(1), bnc(2), bnc(3), rot(0.5, 0.5), ring(0.5, 0.5), bomb(0.5, 0.5), h(0.5), v(0.5)], null, null, null,
+      // M29 (bars 113-116): outro reverb
+      [bomb(0.3, 0.3), bnc(0)], [bomb(0.7, 0.3), bnc(1)], [bomb(0.7, 0.7), bnc(2)], [bomb(0.3, 0.7), bnc(3)],
+      [h(0.3), v(0.7), d(1, 0)], [h(0.7), v(0.3), d(-1, 0)], null, [rot(0.5, 0.5)],
+      [hom(0), hom(2), b(0), b(2), bomb(0.5, 0.5)], null, null, [ring(0.5, 0.5)],
+      [sp(0, 0.4), sp(2, 0.4), pil('h', 0.5), pil('v', 0.5), bomb(0.5, 0.5)], null, null, [bnc(0), bnc(2)],
+      // M30 (bars 117-120): final echo
+      [h(0.5), v(0.5), bomb(0.5, 0.5)], null, [d(1, 0), d(-1, 0), bnc(0)], null,
+      [bomb(0.3, 0.3), bomb(0.7, 0.7), bnc(1), bnc(3)], null, [bomb(0.3, 0.7), bomb(0.7, 0.3), bnc(0), bnc(2)], null,
+      [rot(0.5, 0.5), ring(0.5, 0.5), bomb(0.5, 0.5), h(0.5), v(0.5)], null, null, [bnc(0), bnc(1), bnc(2), bnc(3)],
+      [h(0.3), h(0.7), v(0.3), v(0.7), bnc(0), bnc(1), bnc(2), bnc(3), bomb(0.5, 0.5), d(1, 0), d(-1, 0)], null, null, null,
+      // M31 (bars 121-124): final breath
+      [bomb(0.5, 0.5)], null, [h(0.5), v(0.5)], null,
+      [bnc(0), bnc(2)], null, [bnc(1), bnc(3)], null,
+      [rot(0.5, 0.5), ring(0.5, 0.5)], null, [bomb(0.5, 0.5), d(1, 0), d(-1, 0)], null,
+      [bnc(0), bnc(1), bnc(2), bnc(3), rot(0.5, 0.5), ring(0.5, 0.5), bomb(0.5, 0.5), h(0.5), v(0.5)], null, null, null,
     ],
   };
 
@@ -563,11 +1354,203 @@
   let beatPulse = 0;
   const pendingBeats = [];
 
+  // ---------- SETTINGS ----------
+  const settings = {
+    volume: 0.5,
+    beatIndicator: true,
+    particles: true,
+    hud: true,
+    btnSize: 82,
+    padOffsets: { left: { x: 0, y: 0 }, right: { x: 0, y: 0 } },
+  };
+  function loadSettings() {
+    try {
+      const saved = JSON.parse(localStorage.getItem('movelyMobileSettings') || '{}');
+      Object.assign(settings, saved);
+      if (saved.padOffsets) settings.padOffsets = saved.padOffsets;
+    } catch (e) {}
+  }
+  function saveSettings() {
+    try { localStorage.setItem('movelyMobileSettings', JSON.stringify(settings)); } catch (e) {}
+    applySettings();
+  }
+  function applySettings() {
+    if (masterGain) masterGain.gain.value = settings.volume;
+    document.getElementById('combo').style.display = settings.hud ? '' : 'none';
+    document.getElementById('score').style.display = settings.hud ? '' : 'none';
+    applyButtonSize(settings.btnSize);
+    applyPadPositions();
+  }
+  function applyButtonSize(size) {
+    document.querySelectorAll('.tBtn').forEach(el => {
+      el.style.width  = size + 'px';
+      el.style.height = size + 'px';
+    });
+  }
+  function applyPadPositions() {
+    const left = document.getElementById('padLeft');
+    const right = document.getElementById('padRight');
+    if (left)  left.style.transform  = `translate(${-settings.padOffsets.left.x}px, ${-settings.padOffsets.left.y}px)`;
+    if (right) right.style.transform = `translate(${-settings.padOffsets.right.x}px, ${-settings.padOffsets.right.y}px)`;
+    // Note: x is positive = move right, but the pads are anchored to corners so
+    // we offset toward the screen interior using negative translate values.
+    // (See edit drag logic below — keep consistency with how drag updates offsets.)
+  }
+  function openSettings() {
+    const $ = (id) => document.getElementById(id);
+    $('volumeSlider').value = Math.round(settings.volume * 100);
+    $('volumeValue').textContent = Math.round(settings.volume * 100);
+    $('beatIndicatorToggle').classList.toggle('on', settings.beatIndicator);
+    $('particlesToggle').classList.toggle('on', settings.particles);
+    $('hudToggle').classList.toggle('on', settings.hud);
+    $('btnSizeSlider').value = settings.btnSize;
+    $('btnSizeValue').textContent = settings.btnSize;
+    $('settingsPanel').classList.remove('hidden');
+  }
+  function closeSettings() {
+    document.getElementById('settingsPanel').classList.add('hidden');
+  }
+  function resetSettings() {
+    settings.volume = 0.5;
+    settings.beatIndicator = true;
+    settings.particles = true;
+    settings.hud = true;
+    settings.btnSize = 82;
+    settings.padOffsets = { left: { x: 0, y: 0 }, right: { x: 0, y: 0 } };
+    saveSettings();
+    openSettings();
+  }
+  loadSettings();
+
+  // Wire UI
+  document.getElementById('settingsLink').addEventListener('click', openSettings);
+  document.getElementById('closeSettingsBtn').addEventListener('click', closeSettings);
+  document.getElementById('resetSettingsBtn').addEventListener('click', resetSettings);
+  document.getElementById('volumeSlider').addEventListener('input', (e) => {
+    settings.volume = parseInt(e.target.value, 10) / 100;
+    document.getElementById('volumeValue').textContent = e.target.value;
+    saveSettings();
+  });
+  document.getElementById('btnSizeSlider').addEventListener('input', (e) => {
+    settings.btnSize = parseInt(e.target.value, 10);
+    document.getElementById('btnSizeValue').textContent = e.target.value;
+    saveSettings();
+  });
+  function bindToggle(id, key) {
+    const el = document.getElementById(id);
+    el.addEventListener('click', () => {
+      settings[key] = !settings[key];
+      el.classList.toggle('on', settings[key]);
+      saveSettings();
+    });
+  }
+  bindToggle('beatIndicatorToggle', 'beatIndicator');
+  bindToggle('particlesToggle', 'particles');
+  bindToggle('hudToggle', 'hud');
+
+  // ---------- EDIT TOUCH KEYS ----------
+  // Tap "EDIT" → drag pads around. Each pad's offset (in px from its
+  // default corner anchor) is saved to localStorage.
+  let editingPads = false;
+  let snapshotOffsets = null;
+  const padIds = ['padLeft', 'padRight'];
+
+  function enterEditMode() {
+    editingPads = true;
+    snapshotOffsets = JSON.parse(JSON.stringify(settings.padOffsets));
+    closeSettings();
+    document.getElementById('editPadsBanner').classList.remove('hidden');
+    document.getElementById('editSizeSlider').value = settings.btnSize;
+    padIds.forEach(id => {
+      const el = document.getElementById(id);
+      el.classList.add('editing');
+      el.style.pointerEvents = 'auto';
+      attachDragHandlers(el);
+    });
+  }
+  function exitEditMode(save) {
+    editingPads = false;
+    document.getElementById('editPadsBanner').classList.add('hidden');
+    padIds.forEach(id => {
+      const el = document.getElementById(id);
+      el.classList.remove('editing');
+      el.style.pointerEvents = '';
+      detachDragHandlers(el);
+    });
+    if (!save && snapshotOffsets) {
+      settings.padOffsets = snapshotOffsets;
+    }
+    saveSettings();
+    openSettings();
+  }
+  function attachDragHandlers(el) {
+    const which = el.id === 'padLeft' ? 'left' : 'right';
+    const onStart = (e) => {
+      e.preventDefault();
+      const t = e.touches ? e.touches[0] : e;
+      el._dragStartX = t.clientX;
+      el._dragStartY = t.clientY;
+      el._initOffX = settings.padOffsets[which].x;
+      el._initOffY = settings.padOffsets[which].y;
+      document.addEventListener('touchmove', el._onMove, { passive: false });
+      document.addEventListener('touchend',  el._onEnd);
+      document.addEventListener('mousemove', el._onMove);
+      document.addEventListener('mouseup',   el._onEnd);
+    };
+    const onMove = (e) => {
+      e.preventDefault();
+      const t = e.touches ? e.touches[0] : e;
+      const dx = t.clientX - el._dragStartX;
+      const dy = t.clientY - el._dragStartY;
+      // Left pad is anchored bottom-left (positive offset moves toward center).
+      // Right pad is anchored bottom-right (positive offset also moves toward center).
+      // We just store the raw drag deltas and apply them as a CSS translate.
+      settings.padOffsets[which].x = el._initOffX - dx; // see applyPadPositions for sign
+      settings.padOffsets[which].y = el._initOffY - dy;
+      // Constrain so pad stays partially on-screen
+      const W = window.innerWidth, H = window.innerHeight;
+      const max = Math.min(W, H) * 0.45;
+      settings.padOffsets[which].x = Math.max(-max, Math.min(max, settings.padOffsets[which].x));
+      settings.padOffsets[which].y = Math.max(-max, Math.min(max, settings.padOffsets[which].y));
+      applyPadPositions();
+    };
+    const onEnd = () => {
+      document.removeEventListener('touchmove', el._onMove);
+      document.removeEventListener('touchend',  el._onEnd);
+      document.removeEventListener('mousemove', el._onMove);
+      document.removeEventListener('mouseup',   el._onEnd);
+    };
+    el._onStart = onStart; el._onMove = onMove; el._onEnd = onEnd;
+    el.addEventListener('touchstart', onStart, { passive: false });
+    el.addEventListener('mousedown',  onStart);
+  }
+  function detachDragHandlers(el) {
+    if (el._onStart) {
+      el.removeEventListener('touchstart', el._onStart);
+      el.removeEventListener('mousedown',  el._onStart);
+    }
+  }
+  document.getElementById('editTouchKeysBtn').addEventListener('click', enterEditMode);
+  document.getElementById('saveEditPads').addEventListener('click', () => exitEditMode(true));
+  document.getElementById('cancelEditPads').addEventListener('click', () => exitEditMode(false));
+  document.getElementById('resetEditPads').addEventListener('click', () => {
+    settings.padOffsets = { left: { x: 0, y: 0 }, right: { x: 0, y: 0 } };
+    settings.btnSize = 82;
+    document.getElementById('editSizeSlider').value = 82;
+    applyPadPositions();
+    applyButtonSize(82);
+  });
+  document.getElementById('editSizeSlider').addEventListener('input', (e) => {
+    settings.btnSize = parseInt(e.target.value, 10);
+    applyButtonSize(settings.btnSize);
+  });
+  applySettings();
+
   function initAudio() {
     if (audioCtx) return;
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     masterGain = audioCtx.createGain();
-    masterGain.gain.value = 0.5;
+    masterGain.gain.value = settings.volume;
     masterGain.connect(audioCtx.destination);
   }
   function startSession() {
@@ -787,13 +1770,13 @@
     }
   }
 
-  // Hand-designed pattern playback. The pattern array loops over the level's duration
-  // so the same sequence repeats — players learn it through repetition, GD-style.
+  // Patterns are FULL-LENGTH compositions — they play through once across the
+  // 3-minute level with no internal repetition.
   function planFromPattern(lvl, beatIndex, fireTime, telegraphStart, fireDuration) {
     const pat = LEVEL_PATTERNS[lvl.patternKey];
     if (!pat) return;
-    // Skip 4-beat lead-in then loop the pattern
-    const patBeat = (beatIndex - 4 + pat.length) % pat.length;
+    const patBeat = beatIndex - 4;
+    if (patBeat < 0 || patBeat >= pat.length) return;
     const slot = pat[patBeat];
     if (!slot) return;
     for (const cfg of slot) {
@@ -1094,6 +2077,7 @@
     state.floatTexts.push({ text, color, x, y, life: 0.9, vy: -50 });
   }
   function spawnBurstParticles(dir) {
+    if (!settings.particles) return;
     for (let i = 0; i < 8; i++) {
       state.particles.push({
         x: player.x + player.w/2, y: player.y + player.h/2,
@@ -1115,6 +2099,7 @@
     }
   }
   function spawnDodgeParticles(x, y) {
+    if (!settings.particles) return;
     for (let i = 0; i < 5; i++) {
       state.particles.push({
         x, y, vx: (Math.random()-0.5)*200, vy: (Math.random()-0.5)*200,
@@ -1874,6 +2859,7 @@
 
   function drawBeatIndicator() {
     if (!audioCtx) return;
+    if (!settings.beatIndicator) return;
     const beatDur = getBeatDuration();
     const elapsed = audioCtx.currentTime - songStartTime;
     const beat = elapsed / beatDur;

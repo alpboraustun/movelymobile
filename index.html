@@ -1759,6 +1759,81 @@
     moveTrail: [],
     burstTimer: 0, burstDir: { x: 0, y: 0 }, burstStrength: 0,
   };
+  // ---------- ENDLESS BOSS AI ----------
+  const playerAI = {
+    cx: 0, cy: 0, prevCx: 0, prevCy: 0,
+    vx: 0, vy: 0, smoothVx: 0, smoothVy: 0,
+    idleTime: 0,
+  };
+  function resetPlayerAI() {
+    playerAI.cx = playerAI.prevCx = player.x + player.w/2;
+    playerAI.cy = playerAI.prevCy = player.y + player.h/2;
+    playerAI.vx = playerAI.vy = 0;
+    playerAI.smoothVx = playerAI.smoothVy = 0;
+    playerAI.idleTime = 0;
+  }
+  function updatePlayerAI(dt) {
+    if (dt <= 0) return;
+    const cx = player.x + player.w/2;
+    const cy = player.y + player.h/2;
+    playerAI.vx = (cx - playerAI.prevCx) / dt;
+    playerAI.vy = (cy - playerAI.prevCy) / dt;
+    playerAI.smoothVx = playerAI.smoothVx * 0.7 + playerAI.vx * 0.3;
+    playerAI.smoothVy = playerAI.smoothVy * 0.7 + playerAI.vy * 0.3;
+    const speed = Math.hypot(playerAI.vx, playerAI.vy);
+    if (speed < 30) playerAI.idleTime += dt; else playerAI.idleTime = 0;
+    playerAI.prevCx = cx; playerAI.prevCy = cy;
+    playerAI.cx = cx; playerAI.cy = cy;
+  }
+  function predictPlayerFrac(secondsAhead) {
+    const damp = 0.85;
+    const px = playerAI.cx + playerAI.smoothVx * secondsAhead * damp;
+    const py = playerAI.cy + playerAI.smoothVy * secondsAhead * damp;
+    let fx = (px - ARENA.x) / ARENA.w;
+    let fy = (py - ARENA.y) / ARENA.h;
+    fx = Math.max(0.06, Math.min(0.94, fx));
+    fy = Math.max(0.06, Math.min(0.94, fy));
+    return { x: fx, y: fy };
+  }
+  function bossStrategy(name, px, py) {
+    const clamp01 = (x) => Math.max(0.05, Math.min(0.95, x));
+    switch (name) {
+      case 'targetRow':   return [{ type: 'hLaser', y: py }];
+      case 'targetCol':   return [{ type: 'vLaser', x: px }];
+      case 'crossCut':    return [{ type: 'hLaser', y: py }, { type: 'vLaser', x: px }];
+      case 'predictBomb': return [{ type: 'bomb', cx: px, cy: py }];
+      case 'punishCamp':  return [
+        { type: 'bomb', cx: px, cy: py },
+        Math.random() < 0.5 ? { type: 'hLaser', y: py } : { type: 'vLaser', x: px },
+      ];
+      case 'funnel': {
+        const off = 0.18;
+        return Math.random() < 0.5
+          ? [{ type: 'hLaser', y: clamp01(py - off) }, { type: 'hLaser', y: clamp01(py + off) }]
+          : [{ type: 'vLaser', x: clamp01(px - off) }, { type: 'vLaser', x: clamp01(px + off) }];
+      }
+      case 'fourCut':     return [
+        { type: 'hLaser', y: clamp01(py - 0.2) },
+        { type: 'hLaser', y: clamp01(py + 0.2) },
+        { type: 'vLaser', x: clamp01(px - 0.2) },
+        { type: 'vLaser', x: clamp01(px + 0.2) },
+      ];
+      case 'homing':      return [{ type: 'homing' }];
+      case 'stalkBullet': return [{ type: 'bullet' }];
+      case 'ringTrap':    return [{ type: 'ring', cx: px, cy: py }];
+      case 'bouncerSwarm':return [{ type: 'bouncer', side: 0 }, { type: 'bouncer', side: 2 }];
+      default: return null;
+    }
+  }
+  function getBossStrategies(elapsedSec) {
+    if (elapsedSec < 30)  return ['targetRow','targetCol','random','random','random'];
+    if (elapsedSec < 60)  return ['targetRow','targetCol','predictBomb','stalkBullet','random','random'];
+    if (elapsedSec < 120) return ['targetRow','targetCol','crossCut','predictBomb','homing','stalkBullet','random'];
+    if (elapsedSec < 180) return ['crossCut','predictBomb','punishCamp','homing','funnel','stalkBullet','random'];
+    if (elapsedSec < 240) return ['crossCut','predictBomb','punishCamp','funnel','fourCut','ringTrap','bouncerSwarm','homing'];
+    return                     ['crossCut','punishCamp','fourCut','funnel','ringTrap','bouncerSwarm','homing','predictBomb'];
+  }
+
   const state = {
     running: false, gameOver: false, levelComplete: false,
     score: 0, combo: 0, bestCombo: 0,
@@ -1799,23 +1874,45 @@
     }
   }
 
-  // Endless mode: random spawning that gets harder over time.
+  // Endless mode: boss-style targeting that reads the player's movement.
   function planEndless(beatIndex, fireTime, telegraphStart, fireDuration, beatDur) {
     const phase = getEndlessPhase(state.elapsed);
     if (beatIndex - lastEndlessSpawnBeat < phase.gap) return;
     if (Math.random() > 0.85) { lastEndlessSpawnBeat = beatIndex; return; }
     lastEndlessSpawnBeat = beatIndex;
-    const simul = 1 + Math.floor(Math.random() * phase.simul);
-    for (let i = 0; i < simul; i++) {
-      const type = phase.types[Math.floor(Math.random() * phase.types.length)];
-      spawnTrap({ type }, telegraphStart, fireTime, fireDuration);
-    }
+
+    const now = audioCtx ? audioCtx.currentTime : 0;
+    const dtToFire = Math.max(0, fireTime - now);
+    const camping = playerAI.idleTime > 1.2;
+    const strategies = getBossStrategies(state.elapsed);
+    const stratName = camping
+      ? 'punishCamp'
+      : strategies[Math.floor(Math.random() * strategies.length)];
+
+    const traps = pickEndlessTraps(stratName, dtToFire, phase);
+    for (const cfg of traps) spawnTrap(cfg, telegraphStart, fireTime, fireDuration);
+
     if (phase.sub && Math.random() < 0.5) {
       const subFireTime = fireTime + beatDur * 0.5;
       const subTelegraphStart = subFireTime - (fireTime - telegraphStart);
-      const type = phase.types[Math.floor(Math.random() * phase.types.length)];
-      spawnTrap({ type }, subTelegraphStart, subFireTime, fireDuration);
+      const subDtToFire = subFireTime - now;
+      const subStrat = strategies[Math.floor(Math.random() * strategies.length)];
+      const subTraps = pickEndlessTraps(subStrat, subDtToFire, phase);
+      for (const cfg of subTraps) spawnTrap(cfg, subTelegraphStart, subFireTime, fireDuration);
     }
+  }
+  function pickEndlessTraps(stratName, dtToFire, phase) {
+    if (stratName === 'random') {
+      const simul = 1 + Math.floor(Math.random() * phase.simul);
+      const out = [];
+      for (let i = 0; i < simul; i++) {
+        const type = phase.types[Math.floor(Math.random() * phase.types.length)];
+        out.push({ type });
+      }
+      return out;
+    }
+    const predicted = predictPlayerFrac(dtToFire);
+    return bossStrategy(stratName, predicted.x, predicted.y) || [];
   }
 
   // Convert a 0..1 fraction (or undefined) into an arena coordinate.
@@ -2230,6 +2327,7 @@
 
     player.bobPhase += dt * 6;
     player.hurtFlash = Math.max(0, player.hurtFlash - dt * 4);
+    updatePlayerAI(dt);
 
     player.moveTrail.push({ x: player.x + player.w/2, y: player.y + player.h/2, life: 0.3 });
     for (const t of player.moveTrail) t.life -= dt;
@@ -2943,6 +3041,7 @@
     pendingBeats.length = 0;
     lastEndlessSpawnBeat = -999;
     recentPresses.length = 0;
+    resetPlayerAI();
     // Small fixed pre-roll. Trap planner has its own lookahead independent of audio.
     songStartTime = audioCtx.currentTime + 0.25;
     state.running = true;

@@ -90,6 +90,18 @@
   #title { font-size: 22px; letter-spacing: 8px; text-shadow: 0 0 12px #ff5cf7; }
   #score { font-size: 18px; text-shadow: 0 0 6px #5cffd6; }
   #combo { font-size: 18px; color: #ffe14f; text-shadow: 0 0 6px #ffaa00; min-width: 120px; text-align: right;}
+  #inGameSettings {
+    pointer-events: auto;
+    width: 34px; height: 34px; border-radius: 50%;
+    background: rgba(20, 10, 40, 0.55);
+    border: 1.5px solid rgba(92, 255, 214, 0.55);
+    color: #5cffd6;
+    font-size: 17px; font-weight: bold;
+    cursor: pointer; margin-left: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: inherit; line-height: 1;
+  }
+  #inGameSettings:active { transform: scale(0.92); }
   #subhud {
     position: fixed; top: 56px; left: 0; right: 0; text-align: center;
     z-index: 5; pointer-events: none;
@@ -362,7 +374,9 @@
     border-radius: 12px;
   }
   .touchPad.editing .tBtn {
-    pointer-events: none;
+    /* Keep buttons interactive — we change their behavior to "drag" via JS,
+       not via CSS pointer-events. CSS pointer-events:none would let touches
+       pass THROUGH to the canvas, so dragging would never trigger. */
     border-style: dashed !important;
     opacity: 0.85;
   }
@@ -423,6 +437,7 @@
   <div id="title">MOVELY</div>
   <div id="combo">COMBO: 0</div>
   <div id="score">SCORE: 0</div>
+  <button id="inGameSettings" title="Settings" aria-label="Settings">⚙</button>
 </div>
 <div id="subhud">
   <div id="levelInfo" style="color:#5cffd6">LEVEL 1 — FIRST STEPS</div>
@@ -1390,14 +1405,19 @@
   function applyPadPositions() {
     const left = document.getElementById('padLeft');
     const right = document.getElementById('padRight');
-    if (left)  left.style.transform  = `translate(${-settings.padOffsets.left.x}px, ${-settings.padOffsets.left.y}px)`;
-    if (right) right.style.transform = `translate(${-settings.padOffsets.right.x}px, ${-settings.padOffsets.right.y}px)`;
-    // Note: x is positive = move right, but the pads are anchored to corners so
-    // we offset toward the screen interior using negative translate values.
-    // (See edit drag logic below — keep consistency with how drag updates offsets.)
+    if (left)  left.style.transform  = `translate(${settings.padOffsets.left.x}px, ${settings.padOffsets.left.y}px)`;
+    if (right) right.style.transform = `translate(${settings.padOffsets.right.x}px, ${settings.padOffsets.right.y}px)`;
   }
+  let pausedFromGame = false;
   function openSettings() {
     const $ = (id) => document.getElementById(id);
+    if (state && state.running && !state.gameOver && !state.levelComplete) {
+      pausedFromGame = true;
+      state.running = false;
+      if (audioCtx && audioCtx.state === 'running') {
+        try { audioCtx.suspend(); } catch (e) {}
+      }
+    }
     $('volumeSlider').value = Math.round(settings.volume * 100);
     $('volumeValue').textContent = Math.round(settings.volume * 100);
     $('beatIndicatorToggle').classList.toggle('on', settings.beatIndicator);
@@ -1409,6 +1429,14 @@
   }
   function closeSettings() {
     document.getElementById('settingsPanel').classList.add('hidden');
+    // Don't auto-resume if we're entering edit mode.
+    if (pausedFromGame && !editingPads) {
+      pausedFromGame = false;
+      if (audioCtx && audioCtx.state === 'suspended') {
+        try { audioCtx.resume(); } catch (e) {}
+      }
+      state.running = true;
+    }
   }
   function resetSettings() {
     settings.volume = 0.5;
@@ -1424,6 +1452,10 @@
 
   // Wire UI
   document.getElementById('settingsLink').addEventListener('click', openSettings);
+  document.getElementById('inGameSettings').addEventListener('click', (e) => {
+    e.currentTarget.blur();
+    openSettings();
+  });
   document.getElementById('closeSettingsBtn').addEventListener('click', closeSettings);
   document.getElementById('resetSettingsBtn').addEventListener('click', resetSettings);
   document.getElementById('volumeSlider').addEventListener('input', (e) => {
@@ -1449,8 +1481,11 @@
   bindToggle('hudToggle', 'hud');
 
   // ---------- EDIT TOUCH KEYS ----------
-  // Tap "EDIT" → drag pads around. Each pad's offset (in px from its
-  // default corner anchor) is saved to localStorage.
+  // When editing, the same touch buttons behave as DRAG HANDLES for their
+  // parent pad. The press handler in bindTouchButton checks `editingPads`
+  // and routes to startPadDrag instead of registering a key press. This
+  // works because the buttons keep their normal pointer-events behavior
+  // (CSS pointer-events:none would let touches pass through to the canvas).
   let editingPads = false;
   let snapshotOffsets = null;
   const padIds = ['padLeft', 'padRight'];
@@ -1461,75 +1496,55 @@
     closeSettings();
     document.getElementById('editPadsBanner').classList.remove('hidden');
     document.getElementById('editSizeSlider').value = settings.btnSize;
-    padIds.forEach(id => {
-      const el = document.getElementById(id);
-      el.classList.add('editing');
-      el.style.pointerEvents = 'auto';
-      attachDragHandlers(el);
-    });
+    padIds.forEach(id => document.getElementById(id).classList.add('editing'));
+    // Release any keys that may have been pressed before edit started
+    Object.keys(keys).forEach(k => keys[k] = false);
+    document.querySelectorAll('.tBtn').forEach(b => b.classList.remove('active'));
   }
   function exitEditMode(save) {
     editingPads = false;
     document.getElementById('editPadsBanner').classList.add('hidden');
-    padIds.forEach(id => {
-      const el = document.getElementById(id);
-      el.classList.remove('editing');
-      el.style.pointerEvents = '';
-      detachDragHandlers(el);
-    });
+    padIds.forEach(id => document.getElementById(id).classList.remove('editing'));
     if (!save && snapshotOffsets) {
       settings.padOffsets = snapshotOffsets;
     }
     saveSettings();
     openSettings();
   }
-  function attachDragHandlers(el) {
-    const which = el.id === 'padLeft' ? 'left' : 'right';
-    const onStart = (e) => {
-      e.preventDefault();
-      const t = e.touches ? e.touches[0] : e;
-      el._dragStartX = t.clientX;
-      el._dragStartY = t.clientY;
-      el._initOffX = settings.padOffsets[which].x;
-      el._initOffY = settings.padOffsets[which].y;
-      document.addEventListener('touchmove', el._onMove, { passive: false });
-      document.addEventListener('touchend',  el._onEnd);
-      document.addEventListener('mousemove', el._onMove);
-      document.addEventListener('mouseup',   el._onEnd);
-    };
-    const onMove = (e) => {
-      e.preventDefault();
-      const t = e.touches ? e.touches[0] : e;
-      const dx = t.clientX - el._dragStartX;
-      const dy = t.clientY - el._dragStartY;
-      // Left pad is anchored bottom-left (positive offset moves toward center).
-      // Right pad is anchored bottom-right (positive offset also moves toward center).
-      // We just store the raw drag deltas and apply them as a CSS translate.
-      settings.padOffsets[which].x = el._initOffX - dx; // see applyPadPositions for sign
-      settings.padOffsets[which].y = el._initOffY - dy;
-      // Constrain so pad stays partially on-screen
+
+  // Start dragging the pad that contains `pad`. Called from the button's
+  // touch/mouse handler when editingPads is true.
+  function startPadDrag(pad, e) {
+    const which = pad.id === 'padLeft' ? 'left' : 'right';
+    const t = (e.touches && e.touches[0]) || e;
+    const startX = t.clientX, startY = t.clientY;
+    const initOffX = settings.padOffsets[which].x;
+    const initOffY = settings.padOffsets[which].y;
+
+    const onMove = (ev) => {
+      ev.preventDefault();
+      const tt = (ev.touches && ev.touches[0]) || ev;
+      const dx = tt.clientX - startX;
+      const dy = tt.clientY - startY;
       const W = window.innerWidth, H = window.innerHeight;
       const max = Math.min(W, H) * 0.45;
-      settings.padOffsets[which].x = Math.max(-max, Math.min(max, settings.padOffsets[which].x));
-      settings.padOffsets[which].y = Math.max(-max, Math.min(max, settings.padOffsets[which].y));
+      settings.padOffsets[which].x = Math.max(-max, Math.min(max, initOffX + dx));
+      settings.padOffsets[which].y = Math.max(-max, Math.min(max, initOffY + dy));
       applyPadPositions();
     };
     const onEnd = () => {
-      document.removeEventListener('touchmove', el._onMove);
-      document.removeEventListener('touchend',  el._onEnd);
-      document.removeEventListener('mousemove', el._onMove);
-      document.removeEventListener('mouseup',   el._onEnd);
+      document.removeEventListener('touchmove', onMove);
+      document.removeEventListener('touchend',  onEnd);
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup',   onEnd);
     };
-    el._onStart = onStart; el._onMove = onMove; el._onEnd = onEnd;
-    el.addEventListener('touchstart', onStart, { passive: false });
-    el.addEventListener('mousedown',  onStart);
+    document.addEventListener('touchmove', onMove, { passive: false });
+    document.addEventListener('touchend',  onEnd);
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup',   onEnd);
   }
-  function detachDragHandlers(el) {
-    if (el._onStart) {
-      el.removeEventListener('touchstart', el._onStart);
-      el.removeEventListener('mousedown',  el._onStart);
-    }
-  }
+  // Expose for the button binder
+  window.__movelyStartPadDrag = startPadDrag;
   document.getElementById('editTouchKeysBtn').addEventListener('click', enterEditMode);
   document.getElementById('saveEditPads').addEventListener('click', () => exitEditMode(true));
   document.getElementById('cancelEditPads').addEventListener('click', () => exitEditMode(false));
@@ -2032,6 +2047,14 @@
   function bindTouchButton(el) {
     const name = el.dataset.key;
     const press = (e) => {
+      // In edit mode, this button becomes a drag handle for its pad.
+      if (editingPads) {
+        e.preventDefault();
+        e.stopPropagation();
+        const pad = el.closest('.touchPad');
+        if (pad) startPadDrag(pad, e);
+        return;
+      }
       e.preventDefault();
       e.stopPropagation();
       if (!keys[name]) {
@@ -2044,6 +2067,7 @@
       }
     };
     const release = (e) => {
+      if (editingPads) return;        // drag handles its own end
       e.preventDefault();
       e.stopPropagation();
       keys[name] = false;
@@ -2052,7 +2076,6 @@
     el.addEventListener('touchstart',  press,   { passive: false });
     el.addEventListener('touchend',    release, { passive: false });
     el.addEventListener('touchcancel', release, { passive: false });
-    // Mouse fallback for desktop testing
     el.addEventListener('mousedown', press);
     el.addEventListener('mouseup', release);
     el.addEventListener('mouseleave', release);
